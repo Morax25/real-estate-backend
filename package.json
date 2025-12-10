@@ -1,0 +1,40 @@
+{
+  "name": "real-estate-backend",
+  "version": "1.0.0",
+  "description": "Real estate office work space and workdesk searching web application",
+  "main": "dist/index.js",
+  "author": "Adarsh Kushwaha",
+  "license": "ISC",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --watch src/**/*.ts --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "test": "echo \"No tests yet\"",
+    "lint": "eslint src/**/*.ts --fix"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.2",
+    "mongoose-aggregate-paginate-v2": "^1.1.4",
+    "multer": "^2.0.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.49.0",
+    "@typescript-eslint/parser": "^8.49.0",
+    "eslint": "^9.39.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
