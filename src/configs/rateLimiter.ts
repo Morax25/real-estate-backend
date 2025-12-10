@@ -13,7 +13,6 @@ export const getRateLimiter = (
   role: string = 'guest'
 ): RateLimitRequestHandler => {
   const { windowMs, max } = ROLE_LIMITS[role] || ROLE_LIMITS['guest'];
-
   return rateLimit({
     windowMs,
     max,
