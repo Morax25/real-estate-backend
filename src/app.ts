@@ -7,9 +7,11 @@ import { healthCheck } from './controller/healthCheck.controller.ts';
 import compression from 'compression';
 import { corsConfig } from './configs/cors.ts';
 import { notFoundHandler } from './controller/notFoundHandler.controller.ts';
+import morgan from 'morgan';
+import { loggerStream } from './configs/logger.ts';
 
 const app = express();
-
+app.use(morgan('combined', { stream: loggerStream }));
 //middlewares
 
 app.use(compression());
