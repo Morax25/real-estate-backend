@@ -1,6 +1,6 @@
 import app from "./app.ts"
-const PORT = 3000
-
+import {PORT} from './configs/env.ts'
+console.log("Path" )
 app.listen(PORT, ()=>{
   console.log(`Server is running on PORT: ${PORT}`)
 })
