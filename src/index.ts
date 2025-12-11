@@ -1,6 +1,6 @@
-import app from "./app.ts"
-import {PORT} from './configs/env.ts'
-import connectDB from "./db/index.ts";
+import app from './app.ts';
+import { PORT } from './configs/env.ts';
+import connectDB from './db/index.ts';
 
 connectDB()
   .then((res) => {

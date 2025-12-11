@@ -32,7 +32,7 @@ app.use(cookieParser());
 
 //Upcoming Routes section
 app.get('/health', healthCheck);
-app.use('/api/v1/user', userRouter)
+app.use('/api/v1/user', userRouter);
 
 // 404 fallback
 app.use(notFoundHandler);

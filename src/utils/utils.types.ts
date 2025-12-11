@@ -9,4 +9,3 @@ export interface ApiResponseProps<T = any> {
   message?: string;
   data?: T;
 }
-
