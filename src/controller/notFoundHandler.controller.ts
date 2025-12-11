@@ -4,9 +4,11 @@ import ApiResponse from '../utils/ApiResponse.ts';
 export const notFoundHandler = (req: Request, res: Response): void => {
   const response = new ApiResponse({
     statusCode: 404,
-    message: 'Route not found',
-    data: null,
+    message: 'The requested API endpoint does not exist.',
+    data: {
+      path: req.originalUrl,
+      timestamp: new Date().toISOString(),
+    },
   });
-
   res.status(response.statusCode).json(response);
 };

@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import { errorHandler } from './utils/errorHandler.ts';
 import { healthCheck } from './controller/healthCheck.controller.ts';
 import compression from 'compression';
-import ApiError from './utils/ApiError.ts';
 import { corsConfig } from './configs/cors.ts';
 import { notFoundHandler } from './controller/notFoundHandler.controller.ts';
 
