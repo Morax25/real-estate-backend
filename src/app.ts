@@ -9,6 +9,7 @@ import { corsConfig } from './configs/cors.ts';
 import { notFoundHandler } from './controller/notFoundHandler.controller.ts';
 import morgan from 'morgan';
 import { loggerStream } from './configs/logger.ts';
+import userRouter from './routes/user.routes.ts';
 
 const app = express();
 
@@ -31,8 +32,7 @@ app.use(cookieParser());
 
 //Upcoming Routes section
 app.get('/health', healthCheck);
-
-
+app.use('/api/v1/user', userRouter)
 
 // 404 fallback
 app.use(notFoundHandler);
