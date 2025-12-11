@@ -15,7 +15,9 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "moduleDetection": "force"
+    "moduleDetection": "force",
+    "noFallthroughCasesInSwitch": true,
+    "allowImportingTsExtensions":true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
