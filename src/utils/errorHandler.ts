@@ -17,9 +17,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     success: false,
     message: 'Internal Server Error',
     stack:
-      process.env.NODE_ENV === 'development'
-        ? (err as Error).stack
-        : undefined,
+      process.env.NODE_ENV === 'development' ? (err as Error).stack : undefined,
   };
 
   return res.status(statusCode).json(response);

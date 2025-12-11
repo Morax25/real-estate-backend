@@ -1,8 +1,8 @@
-import type { CorsOptions } from "cors";
+import type { CorsOptions } from 'cors';
 
 export const corsConfig: CorsOptions = {
-  origin: "*",
+  origin: '*',
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
