@@ -1,5 +1,5 @@
-import { Schema, model, models } from "mongoose";
-import type { IPriceHistoryItem, IProperty } from "./models.types.ts";
+import { Schema, model, models } from 'mongoose';
+import type { IPriceHistoryItem, IProperty } from './models.types.ts';
 
 const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   {
@@ -13,6 +13,7 @@ const PropertySchema = new Schema<IProperty>(
   {
     title: { type: String, required: true },
     location: { type: String, required: true },
+    spaceType: { type: String, required: true },
     timing: { type: String, required: true },
     tag: { type: String, required: true },
     keywords: { type: [String], required: true },
@@ -24,7 +25,7 @@ const PropertySchema = new Schema<IProperty>(
     reviews: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Review",
+        ref: 'Review',
       },
     ],
   },
@@ -32,4 +33,4 @@ const PropertySchema = new Schema<IProperty>(
 );
 
 export const Property =
-  models.Property || model<IProperty>("Property", PropertySchema);
+  models.Property || model<IProperty>('Property', PropertySchema);
