@@ -1,7 +1,7 @@
-import type { Request, Response } from 'express';
 import ApiResponse from '../utils/ApiResponse.ts';
+import asyncHandler from '../utils/asyncHandler.ts';
 
-export const healthCheck = (req: Request, res: Response) => {
+export const healthCheck = asyncHandler(async (req, res) => {
   const response = new ApiResponse({
     statusCode: 200,
     message: 'Server is healthy',
@@ -12,5 +12,5 @@ export const healthCheck = (req: Request, res: Response) => {
     },
   });
 
-  return res.status(response.statusCode).json(response);
-};
+  res.status(response.statusCode).json(response);
+});

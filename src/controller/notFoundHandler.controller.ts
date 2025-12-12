@@ -1,7 +1,7 @@
-import type { Request, Response } from 'express';
 import ApiResponse from '../utils/ApiResponse.ts';
+import asyncHandler from '../utils/asyncHandler.ts';
 
-export const notFoundHandler = (req: Request, res: Response): void => {
+export const notFoundHandler = asyncHandler(async (req, res) => {
   const response = new ApiResponse({
     statusCode: 404,
     message: 'The requested API endpoint does not exist.',
@@ -11,4 +11,4 @@ export const notFoundHandler = (req: Request, res: Response): void => {
     },
   });
   res.status(response.statusCode).json(response);
-};
+});
