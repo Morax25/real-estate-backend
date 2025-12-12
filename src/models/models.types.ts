@@ -6,11 +6,19 @@ export interface IPriceHistoryItem {
   date: Date;
 }
 
+export interface ICenterDetails{
+  title:string;
+  subtitle:string
+}
+
 // Property document type
 export interface IProperty {
   _id: Types.ObjectId;
   title: string;
   location: string;
+  spaceType:string;
+  centerDetails:ICenterDetails[];
+
   timing: string;
   tag: string;
   keywords: string[];
