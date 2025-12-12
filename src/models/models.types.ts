@@ -8,7 +8,15 @@ export interface IPriceHistoryItem {
 
 export interface ICenterDetails{
   title:string;
-  subtitle:string
+  subtitle:string;
+}
+
+export interface IseatingOptions {
+  title:string;
+  description:string;
+  isReserved:string;
+  price:number
+  image:string
 }
 
 // Property document type
@@ -18,12 +26,12 @@ export interface IProperty {
   location: string;
   spaceType:string;
   centerDetails:ICenterDetails[];
-
+  seatingOptions:IseatingOptions[];
   timing: string;
   tag: string;
   keywords: string[];
   images: string[];
-  reviews:IReview[]
+  reviews:IReview[];
   price: {
     currentPrice: number;
     history: IPriceHistoryItem[];

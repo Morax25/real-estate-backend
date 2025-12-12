@@ -8,7 +8,6 @@ const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   },
   { _id: false }
 );
-
 const PropertySchema = new Schema<IProperty>(
   {
     title: { type: String, required: true },
@@ -31,6 +30,5 @@ const PropertySchema = new Schema<IProperty>(
   },
   { timestamps: true }
 );
-
 export const Property =
   models.Property || model<IProperty>('Property', PropertySchema);
