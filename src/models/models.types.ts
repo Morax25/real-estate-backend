@@ -1,37 +1,39 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
-// Price history entry
 export interface IPriceHistoryItem {
   price: number;
   date: Date;
 }
 
-export interface ICenterDetails{
-  title:string;
-  subtitle:string;
+export interface ICenterDetails {
+  title: string;
+  subtitle: string;
 }
 
-export interface IseatingOptions {
-  title:string;
-  description:string;
-  isReserved:string;
-  price:number
-  image:string
+export interface ISeatingOptions {
+  title: string;
+  description: string;
+  isReserved: boolean;
+  price: number;
+  image: string;
 }
 
-// Property document type
 export interface IProperty {
   _id: Types.ObjectId;
   title: string;
+  spaceType: string;
+  brandReviews: string;
   location: string;
-  spaceType:string;
-  centerDetails:ICenterDetails[];
-  seatingOptions:IseatingOptions[];
+  locationDetails: string;
+  isVerified: boolean;
+  centerDetails: ICenterDetails[];
+  seatingOptions: ISeatingOptions[];
   timing: string;
-  tag: string;
+  tag?: string;
+  commonAmenities: string[];
   keywords: string[];
   images: string[];
-  reviews:IReview[];
+  reviews: Types.ObjectId[];
   price: {
     currentPrice: number;
     history: IPriceHistoryItem[];
@@ -40,7 +42,6 @@ export interface IProperty {
   updatedAt: Date;
 }
 
-// Review document type
 export interface IReview {
   _id: Types.ObjectId;
   propertyId: Types.ObjectId;
@@ -49,4 +50,9 @@ export interface IReview {
   comment?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface IPropertyPopulated
+  extends Omit<IProperty, 'reviews'> {
+  reviews: IReview[];
 }

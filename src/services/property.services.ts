@@ -1,0 +1,1 @@
+import { Property } from "../models/property.model.ts";
