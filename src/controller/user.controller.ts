@@ -9,16 +9,16 @@ export const login = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse({
           statusCode: 400,
-          message: 'Please provide the name',
-          data: { name: 'adarsj' },
+          message: 'User not found',
+          data: {},
         })
       );
   }
   res.status(201).json(
     new ApiResponse({
       statusCode: 201,
-      message: `User name is ${name}`,
-      data: { data: null },
+      message: `User found`,
+      data: { data: name },
     })
   );
 });
