@@ -39,5 +39,4 @@ app.use('/api/v1/property', propertyRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-console.log("this is property router", propertyRouter)
 export default app;
