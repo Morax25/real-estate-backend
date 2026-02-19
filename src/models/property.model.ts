@@ -8,7 +8,6 @@ const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   },
   { _id: false }
 );
-
 const CenterDetailsSchema = new Schema(
   {
     title: { type: String, required: true },
