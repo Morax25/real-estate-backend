@@ -1,5 +1,7 @@
-import { Schema, model, models, Types } from 'mongoose';
-import type { IPriceHistoryItem, IProperty } from './models.types.ts';
+import pkg from 'mongoose';
+import type { ICenterDetails, IPriceHistoryItem, IProperty, ISeatingOptions } from './models.types.ts';
+
+const { Schema, model, models, Types } = pkg
 
 const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   {
@@ -8,7 +10,7 @@ const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   },
   { _id: false }
 );
-const CenterDetailsSchema = new Schema(
+const CenterDetailsSchema = new Schema<ICenterDetails>(
   {
     title: { type: String, required: true },
     subtitle: { type: String, required: true },
@@ -16,7 +18,7 @@ const CenterDetailsSchema = new Schema(
   { _id: false }
 );
 
-const SeatingOptionsSchema = new Schema(
+const SeatingOptionsSchema = new Schema<ISeatingOptions>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },

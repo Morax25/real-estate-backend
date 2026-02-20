@@ -8,7 +8,7 @@ const objectId = z
   });
 
 const requiredString = (field: string) =>
-  z.string().nonempty(`${field} is required`);
+  z.string(`${field} must be a string`).nonempty(`${field} is required`);
 
 const nonNegativeNumber = (field: string) =>
   z

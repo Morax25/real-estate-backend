@@ -1,6 +1,7 @@
 import type { ErrorRequestHandler } from 'express';
+import mongoose from 'mongoose';
 import ApiError from './ApiError.ts';
-import { DomainError } from './domainError.ts'; 
+import { DomainError } from './domainError.ts';
 
 const mapDomainStatus = (code: string): number => {
   switch (code) {
@@ -21,31 +22,47 @@ const mapDomainStatus = (code: string): number => {
   }
 };
 
+const isDuplicateKeyError = (
+  err: unknown
+): err is mongoose.mongo.MongoServerError => {
+  return (
+    err instanceof mongoose.mongo.MongoServerError &&
+    err.code === 11000
+  );
+};
+
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-  console.error('🔥 Error caught:', err);
+  let status = 500;
+  let message = 'Internal Server Error';
+  let errors: unknown = undefined;
 
   if (err instanceof ApiError) {
-    return res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-      errors: err.errors,
-    });
+    status = err.statusCode;
+    message = err.message;
+    errors = err.errors;
+  } else if (err instanceof DomainError) {
+    status = mapDomainStatus(err.code);
+    message = err.message;
+    errors = err.details;
+  } else if (err instanceof mongoose.Error.ValidationError) {
+    status = 400;
+    message = 'Validation failed';
+    errors = Object.values(err.errors).map((e) => e.message);
+  } else if (isDuplicateKeyError(err)) {
+    status = 409;
+    message = 'Duplicate key error';
+    errors = err.keyValue;
   }
 
-  if (err instanceof DomainError) {
-    return res.status(mapDomainStatus(err.code)).json({
-      success: false,
-      message: err.message,
-      errors: err.details,
-    });
+  if (status >= 500) {
+    console.error('Unhandled error:', err);
   }
 
-  return res.status(500).json({
+  return res.status(status).json({
     success: false,
-    message: 'Internal Server Error',
-    stack:
-      process.env.NODE_ENV === 'development'
-        ? (err as Error).stack
-        : undefined,
+    message,
+    errors,
+    ...(process.env.NODE_ENV === 'development' &&
+      status >= 500 && { stack: (err as Error).stack }),
   });
 };
