@@ -58,7 +58,7 @@ export const createPropertySchema = z.object({
   timing: requiredString('Timing'),
   tag: requiredString('Tag').optional(),
 
-  commonAmenities: z.array(requiredString('Amenity')).default([]),
+  commonAmenities: z.array(requiredString('Amenity')).min(1, "At least one amenity is required").default([]),
 
   keywords: z
     .array(requiredString('Keyword'))
