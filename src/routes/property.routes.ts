@@ -8,4 +8,5 @@ const router = Router();
 //user register and login routes
 router.post('/add', validate(createPropertySchema), addProperty);
 router.get('/getProduct', getPropertyController)
+
 export default router;
