@@ -1,3 +1,5 @@
+import { HttpCode, type HttpCodeValue } from "./statusCode.ts";
+
 export type DomainErrorCode =
   | 'NOT_FOUND'
   | 'ALREADY_EXISTS'
@@ -6,63 +8,41 @@ export type DomainErrorCode =
   | 'VALIDATION_FAILED'
   | 'CONFLICT';
 
-export abstract class DomainError extends Error {
-  abstract readonly code: DomainErrorCode;
+const domainToHttpMap: Record<DomainErrorCode, HttpCodeValue> = {
+  NOT_FOUND: HttpCode.NOT_FOUND,
+  ALREADY_EXISTS: HttpCode.CONFLICT,
+  INVALID_STATE: HttpCode.BAD_REQUEST,
+  OPERATION_NOT_ALLOWED: HttpCode.FORBIDDEN,
+  VALIDATION_FAILED: HttpCode.UNPROCESSABLE,
+  CONFLICT: HttpCode.CONFLICT,
+};
+
+export class DomainError extends Error {
+  readonly code: DomainErrorCode;
+  readonly httpCode: HttpCodeValue;
   readonly isOperational = true;
   readonly details?: unknown;
+  readonly timestamp: string;
 
-  protected constructor(message: string, details?: unknown) {
+  constructor(code: DomainErrorCode, message: string, details?: unknown) {
     super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+    this.httpCode = domainToHttpMap[code];
     this.details = details;
+    this.timestamp = new Date().toISOString();
     Object.setPrototypeOf(this, new.target.prototype);
     Error.captureStackTrace(this, this.constructor);
   }
-}
 
-export class NotFoundError extends DomainError {
-  readonly code = 'NOT_FOUND';
-
-  constructor(resource: string, details?: unknown) {
-    super(`${resource} not found`, details);
-  }
-}
-
-export class AlreadyExistsError extends DomainError {
-  readonly code = 'ALREADY_EXISTS';
-
-  constructor(resource: string, details?: unknown) {
-    super(`${resource} already exists`, details);
-  }
-}
-
-export class InvalidStateError extends DomainError {
-  readonly code = 'INVALID_STATE';
-
-  constructor(message: string, details?: unknown) {
-    super(message, details);
-  }
-}
-
-export class OperationNotAllowedError extends DomainError {
-  readonly code = 'OPERATION_NOT_ALLOWED';
-
-  constructor(message: string, details?: unknown) {
-    super(message, details);
-  }
-}
-
-export class ConflictError extends DomainError {
-  readonly code = 'CONFLICT';
-
-  constructor(message: string, details?: unknown) {
-    super(message, details);
-  }
-}
-
-export class DomainValidationError extends DomainError {
-  readonly code = 'VALIDATION_FAILED';
-
-  constructor(message: string, details?: Record<string, string[]>) {
-    super(message, details);
+  toJSON() {
+    return {
+      name: this.name,
+      code: this.code,
+      message: this.message,
+      httpCode: this.httpCode,
+      details: this.details,
+      timestamp: this.timestamp,
+    };
   }
 }
