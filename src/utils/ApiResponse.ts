@@ -1,14 +1,12 @@
-import type { ApiResponseProps } from './utils.types.js';
+import type { ApiResponseProps } from './utils.types.ts';
 
 class ApiResponse<T = any> {
   success: boolean;
-  statusCode: number;
   message: string;
   data: T;
 
-  constructor({ statusCode, message = 'Success', data }: ApiResponseProps<T>) {
-    this.success = statusCode < 400;
-    this.statusCode = statusCode;
+  constructor({ message = 'Success', data }: ApiResponseProps<T>) {
+    this.success = true;
     this.message = message;
     this.data = data as T;
   }

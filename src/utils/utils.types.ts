@@ -6,7 +6,6 @@ export interface ApiErrorProps {
   stack?: string;
 }
 export interface ApiResponseProps<T = any> {
-  statusCode: HttpCodeValue;
   message?: string;
   data?: T;
 }
