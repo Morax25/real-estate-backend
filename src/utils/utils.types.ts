@@ -1,11 +1,12 @@
+import type { HttpCodeValue } from "./statusCode.ts";
 export interface ApiErrorProps {
-  statusCode: number;
+  statusCode: HttpCodeValue;
   message?: string;
   errors?: any[];
   stack?: string;
 }
 export interface ApiResponseProps<T = any> {
-  statusCode: number;
+  statusCode: HttpCodeValue;
   message?: string;
   data?: T;
 }

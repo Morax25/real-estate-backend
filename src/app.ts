@@ -14,6 +14,11 @@ import propertyRouter from './routes/property.routes.ts'
 
 const app = express();
 
+// in your main index.ts — remove after testing
+setTimeout(() => {
+  Promise.reject(new Error('test unhandled rejection'));
+}, 3000);
+
 app.use(cors(corsConfig));
 app.use(morgan('combined', { stream: loggerStream }));
 //middlewares
