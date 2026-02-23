@@ -1,4 +1,4 @@
-import pkg from 'mongoose';
+import pkg, { type Model } from 'mongoose';
 import type { ICenterDetails, IPriceHistoryItem, IProperty, ISeatingOptions } from './models.types.ts';
 
 const { Schema, model, models, Types } = pkg
@@ -10,6 +10,7 @@ const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   },
   { _id: false }
 );
+
 const CenterDetailsSchema = new Schema<ICenterDetails>(
   {
     title: { type: String, required: true },
@@ -37,42 +38,41 @@ const PropertySchema = new Schema<IProperty>(
     location: { type: String, required: true },
     locationDetails: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
-
     centerDetails: {
       type: [CenterDetailsSchema],
+      required: true,
       default: [],
     },
-
     seatingOptions: {
       type: [SeatingOptionsSchema],
+      required: true,
       default: [],
     },
-
     timing: { type: String, required: true },
     tag: { type: String },
-
     commonAmenities: {
       type: [String],
+      required: true,
       default: [],
+      validate: {
+        validator: (value: string[]) => value.length > 0,
+        message: 'At least one amenity is required in database',
+      },
     },
-
     keywords: {
       type: [String],
       required: true,
     },
-
     images: {
       type: [String],
       default: [],
     },
-
     reviews: [
       {
         type: Types.ObjectId,
         ref: 'Review',
       },
     ],
-
     price: {
       currentPrice: { type: Number, required: true },
       history: { type: [PriceHistorySchema], default: [] },
@@ -83,5 +83,5 @@ const PropertySchema = new Schema<IProperty>(
 
 PropertySchema.index({ 'price.currentPrice': 1 });
 
-export const Property =
-  models.Property || model<IProperty>('Property', PropertySchema);
+export const Property: Model<IProperty> =
+  (models.Property as Model<IProperty>) || model<IProperty>('Property', PropertySchema);
