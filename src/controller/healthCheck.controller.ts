@@ -107,10 +107,9 @@ export const healthCheck = asyncHandler(async (_req: Request, res: Response) => 
   };
 
   const response = new ApiResponse({
-    statusCode: httpStatus[overallStatus],
     message: `Server is ${overallStatus}`,
     data: payload,
   });
 
-  res.status(response.statusCode).json(response);
+  res.status(httpStatus[overallStatus]).json(response);
 });
