@@ -15,7 +15,6 @@ export const validate = (schema: z.ZodTypeAny) =>
         if (!fieldErrors[field]) {
           fieldErrors[field] = [];
         }
-
         fieldErrors[field].push(issue.message);
       }
 
@@ -32,7 +31,5 @@ export const validate = (schema: z.ZodTypeAny) =>
         errors,
       });
     }
-
-    req.body.validatedData = result.data;
     next();
   });

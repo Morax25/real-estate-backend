@@ -1,22 +1,21 @@
 import ApiResponse from '../utils/ApiResponse.ts';
 import asyncHandler from '../utils/asyncHandler.ts';
+import { HttpCode } from '../utils/statusCode.ts';
 
 export const login = asyncHandler(async (req, res) => {
   const { name } = req.body;
   if (!name) {
         return res
-      .status(400)
+      .status(HttpCode.BAD_REQUEST)
       .json(
         new ApiResponse({
-          statusCode: 400,
           message: 'User not found',
           data: {},
         })
       );
   }
-  res.status(201).json(
+  res.status(HttpCode.OK).json(
     new ApiResponse({
-      statusCode: 201,
       message: `User found`,
       data: { data: name },
     })

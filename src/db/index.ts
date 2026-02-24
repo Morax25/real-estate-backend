@@ -2,17 +2,11 @@ import mongoose from 'mongoose';
 import { DB_NAME, MONGODB_URI } from '../constant.ts';
 
 const connectDB = async () => {
-  try {
-    const connectionInstance = await mongoose.connect(
-      `${MONGODB_URI}/${DB_NAME}`
-    );
-    console.log(
-      `Database connected successfully on host : ${connectionInstance.connection.host}`
-    );
-  } catch (error) {
-    console.log('Mongo DB connection Error', error);
-    process.exit(1);
-  }
+  const connectionInstance = await mongoose.connect(
+    `${MONGODB_URI}/${DB_NAME}`
+  );
+
+  return connectionInstance;
 };
 
 export default connectDB;
