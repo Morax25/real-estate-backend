@@ -48,44 +48,48 @@ export const errorHandler: ErrorRequestHandler = (
 
   const isProduction = process.env.NODE_ENV === 'production';
 
+  const logPayload = {
+    message,
+    status,
+    path: req.originalUrl,
+    method: req.method,
+    requestId: req.headers['x-request-id'],
+    error: err instanceof Error ? err.message : err,
+    stack: err instanceof Error ? err.stack : undefined,
+  };
+
   if (status >= 500) {
-    logger.error('Unhandled error', {
-      error: (err as Error).message,
-      requestId: req.headers['x-request-id'],
-      path: req.path,
-      method: req.method,
-      stack: (err as Error).stack,
-    });
+    logger.error(logPayload);
+  } else {
+    logger.warn(logPayload);
   }
 
   return res.status(status).json({
     success: false,
     message,
     ...(errors !== undefined && { errors }),
-    ...(!isProduction && status >= 500 && { stack: (err as Error).stack }),
+    ...(!isProduction && status >= 500 && { stack: logPayload.stack }),
   });
 };
 
 process.on('unhandledRejection', (err: unknown) => {
-  if (err instanceof DomainError && err.isOperational) return;
-
-  logger.error('Unhandled rejection — shutting down', {
+  logger.error({
+    message: 'Unhandled rejection — shutting down',
     error: err instanceof Error ? err.message : err,
     stack: err instanceof Error ? err.stack : undefined,
     timestamp: new Date().toISOString(),
   });
 
-  logger.once('finish', () => process.exit(1));
-  logger.end();
+  setTimeout(() => process.exit(1), 1000);
 });
 
 process.on('uncaughtException', (err: Error) => {
-  logger.error('Uncaught exception — shutting down', {
+  logger.error({
+    message: 'Uncaught exception — shutting down',
     error: err.message,
     stack: err.stack,
     timestamp: new Date().toISOString(),
   });
 
-  logger.on('finish', () => process.exit(1));
-  logger.end();
+  setTimeout(() => process.exit(1), 1000);
 });

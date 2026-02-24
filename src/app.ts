@@ -14,6 +14,11 @@ import propertyRouter from './routes/property.routes.ts'
 
 const app = express();
 
+//Test unhandled Promise
+// setTimeout(() => {
+//   Promise.reject(new Error("Boom rejected"))
+// }, 3000);
+
 app.use(cors(corsConfig));
 app.use(morgan('combined', { stream: loggerStream }));
 //middlewares

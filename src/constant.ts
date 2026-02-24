@@ -8,7 +8,7 @@ function requireEnv(name: string): string {
   }
   return value;
 }
-export const DB_NAME = 'YTDATABASE';
+export const DB_NAME = 'realestate';
 export const SALT_ROUNDS = Number(process.env.SALT_ROUNDS || 10);
 export const ACCESS_TOKEN_SECRET = requireEnv('ACCESS_TOKEN_SECRET');
 export const ACCESS_TOKEN_EXPIRY = requireEnv('ACCESS_TOKEN_EXPIRY');
