@@ -1,27 +1,18 @@
 import { z } from 'zod';
 import { Types } from 'mongoose';
 
-const objectId = z
-  .string()
-  .refine((val) => Types.ObjectId.isValid(val), {
-    message: 'Invalid ObjectId',
-  });
+const objectId = z.string().refine((val) => Types.ObjectId.isValid(val), {
+  message: 'Invalid ObjectId',
+});
 
 const requiredString = (field: string) =>
-  z.string(`${field} must be a string`).nonempty(`${field} is required`);
+  z.string().min(1, `${field} is required`);
 
 const nonNegativeNumber = (field: string) =>
   z
     .number()
     .refine((val) => !isNaN(val), { message: `${field} must be a number` })
     .refine((val) => val >= 0, { message: `${field} must be >= 0` });
-
-const priceHistorySchema = z.object({
-  price: nonNegativeNumber('Price'),
-  date: z.coerce.date().refine((val) => !isNaN(val.getTime()), {
-    message: 'Invalid date',
-  }),
-});
 
 const centerDetailsSchema = z.object({
   title: requiredString('Center title'),
@@ -31,9 +22,7 @@ const centerDetailsSchema = z.object({
 const seatingOptionsSchema = z.object({
   title: requiredString('Seating title'),
   description: requiredString('Seating description'),
-  isReserved: z.boolean().refine((v) => typeof v === 'boolean', {
-    message: 'isReserved must be a boolean',
-  }),
+  isReserved: z.boolean(),
   price: nonNegativeNumber('Seating price'),
   image: requiredString('Image'),
 });
@@ -58,7 +47,10 @@ export const createPropertySchema = z.object({
   timing: requiredString('Timing'),
   tag: requiredString('Tag').optional(),
 
-  commonAmenities: z.array(requiredString('Amenity')).min(1, "At least one amenity is required").default([]),
+  commonAmenities: z
+    .array(requiredString('Amenity'))
+    .min(1, 'At least one amenity is required')
+    .default([]),
 
   keywords: z
     .array(requiredString('Keyword'))
@@ -68,10 +60,20 @@ export const createPropertySchema = z.object({
 
   reviews: z.array(objectId).optional().default([]),
 
-  price: z.object({
-    currentPrice: nonNegativeNumber('Current price'),
-    history: z.array(priceHistorySchema).optional().default([]),
-  }),
+  currentPrice: nonNegativeNumber('Current price'),
 });
 
+export const updatePropertySchema = createPropertySchema
+  .partial()
+  .strict()
+  .superRefine((data, ctx) => {
+    if ('priceHistory' in data) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'priceHistory cannot be updated',
+      });
+    }
+  });
+
 export type CreatePropertyInput = z.infer<typeof createPropertySchema>;
+export type UpdatePropertyInput = z.infer<typeof updatePropertySchema>;
