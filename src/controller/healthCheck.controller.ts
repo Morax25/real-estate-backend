@@ -1,4 +1,5 @@
 import os from 'os';
+import v8 from 'v8';
 import type { Request, Response } from 'express';
 import ApiResponse from '../utils/ApiResponse.ts';
 import asyncHandler from '../utils/asyncHandler.ts';
@@ -10,6 +11,7 @@ interface ServiceCheck {
   responseTimeMs?: number;
   error?: string;
 }
+
 interface HealthCheckResult {
   status: HealthStatus;
   version: string;
@@ -20,6 +22,7 @@ interface HealthCheckResult {
     memoryUsageMB: {
       heapUsed: number;
       heapTotal: number;
+      heapLimit: number;
       rss: number;
       external: number;
     };
@@ -31,27 +34,40 @@ interface HealthCheckResult {
   };
   services: Record<string, ServiceCheck>;
 }
+
 const serviceChecks: Record<string, () => Promise<ServiceCheck>> = {};
+
+// now based on REAL heap pressure
 const DEGRADED_HEAP_THRESHOLD = 0.85;
+
 function deriveOverallStatus(
   checks: Record<string, ServiceCheck>,
   heapPercent: number,
 ): HealthStatus {
   if (Object.values(checks).some((c) => c.status === 'unhealthy')) return 'unhealthy';
+
   if (
     Object.values(checks).some((c) => c.status === 'degraded') ||
     heapPercent >= DEGRADED_HEAP_THRESHOLD
-  )
+  ) {
     return 'degraded';
+  }
+
   return 'healthy';
 }
 
 export const healthCheck = asyncHandler(async (_req: Request, res: Response) => {
   const mem = process.memoryUsage();
-  const totalHeap = mem.heapTotal;
+
+  // 🔥 FIX: use V8 heap limit instead of heapTotal
+  const heapStats = v8.getHeapStatistics();
+  const heapLimit = heapStats.heap_size_limit;
+
   const usedHeap = mem.heapUsed;
-  const heapPercent = totalHeap > 0 ? usedHeap / totalHeap : 0;
+  const heapPercent = heapLimit > 0 ? usedHeap / heapLimit : 0;
+
   const checkEntries = Object.entries(serviceChecks);
+
   const settledChecks = await Promise.allSettled(
     checkEntries.map(([, fn]) =>
       Promise.race([
@@ -67,13 +83,21 @@ export const healthCheck = asyncHandler(async (_req: Request, res: Response) => 
   );
 
   const services: Record<string, ServiceCheck> = {};
+
   checkEntries.forEach(([name], idx) => {
     const result = settledChecks[idx];
-    if(!result) return console.log("could not find results")
+    if (!result) {
+      console.log('could not find results');
+      return;
+    }
+
     services[name] =
       result.status === 'fulfilled'
         ? result.value
-        : { status: 'unhealthy', error: (result.reason as Error)?.message ?? 'Unknown error' };
+        : {
+            status: 'unhealthy',
+            error: (result.reason as Error)?.message ?? 'Unknown error',
+          };
   });
 
   const overallStatus = deriveOverallStatus(services, heapPercent);
@@ -87,11 +111,12 @@ export const healthCheck = asyncHandler(async (_req: Request, res: Response) => 
     system: {
       memoryUsageMB: {
         heapUsed: Math.round(usedHeap / 1024 / 1024),
-        heapTotal: Math.round(totalHeap / 1024 / 1024),
+        heapTotal: Math.round(mem.heapTotal / 1024 / 1024), // keep for debugging
+        heapLimit: Math.round(heapLimit / 1024 / 1024),     // 🔥 new (real limit)
         rss: Math.round(mem.rss / 1024 / 1024),
         external: Math.round(mem.external / 1024 / 1024),
       },
-      memoryUsagePercent: Math.round(heapPercent * 100),
+      memoryUsagePercent: Math.round(heapPercent * 100), // now REAL %
       cpuLoadAvg: os.loadavg().map((v) => Math.round(v * 100) / 100),
       platform: `${os.platform()}/${os.arch()}`,
       nodeVersion: process.version,
