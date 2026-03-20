@@ -34,10 +34,8 @@ export interface IProperty {
   keywords: string[];
   images: string[];
   reviews: Types.ObjectId[];
-  price: {
-    currentPrice: number;
-    history: IPriceHistoryItem[];
-  };
+  currentPrice: number;
+  priceHistory: IPriceHistoryItem[];
   createdAt: Date;
   updatedAt: Date;
 }

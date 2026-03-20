@@ -1,7 +1,12 @@
 import pkg, { type Model } from 'mongoose';
-import type { ICenterDetails, IPriceHistoryItem, IProperty, ISeatingOptions } from './models.types.ts';
+import type {
+  ICenterDetails,
+  IPriceHistoryItem,
+  IProperty,
+  ISeatingOptions,
+} from './models.types.ts';
 
-const { Schema, model, models, Types } = pkg
+const { Schema, model, models, Types } = pkg;
 
 const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   {
@@ -73,15 +78,14 @@ const PropertySchema = new Schema<IProperty>(
         ref: 'Review',
       },
     ],
-    price: {
-      currentPrice: { type: Number, required: true },
-      history: { type: [PriceHistorySchema], default: [] },
-    },
+    currentPrice: { type: Number, required: true },
+    priceHistory: { type: [PriceHistorySchema], default: [] },
   },
   { timestamps: true }
 );
 
-PropertySchema.index({ 'price.currentPrice': 1 });
+PropertySchema.index({ currentPrice: 1 });
 
 export const Property: Model<IProperty> =
-  (models.Property as Model<IProperty>) || model<IProperty>('Property', PropertySchema);
+  (models.Property as Model<IProperty>) ||
+  model<IProperty>('Property', PropertySchema);

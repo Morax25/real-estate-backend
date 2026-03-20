@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validator.middleware.ts';
-import { createPropertySchema } from '../validators/property.validator.ts';
-import { addProperty, deletePropertyController, getPropertyByID, getPropertyController } from '../controller/property.controller.ts';
+import { createPropertySchema, updatePropertySchema } from '../validators/property.validator.ts';
+import { addProperty, deletePropertyController, getPropertyByID, getPropertyController, updateProperty } from '../controller/property.controller.ts';
 
 const router = Router();
 
@@ -10,5 +10,6 @@ router.post('/add', validate(createPropertySchema), addProperty);
 router.get('/get', getPropertyController)
 router.get('/:id', getPropertyByID)
 router.delete('/:id', deletePropertyController);
+router.patch('/:id', validate(updatePropertySchema), updateProperty)
 
 export default router;
