@@ -4,6 +4,7 @@ import ApiError from '../utils/ApiError.ts';
 
 export const validate = (schema: z.ZodTypeAny) =>
   asyncHandler(async (req, _res, next) => {
+    console.log("This is body",req.body)
     const result = schema.safeParse(req.body);
 
     if (!result.success) {

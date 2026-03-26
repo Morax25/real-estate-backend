@@ -9,7 +9,6 @@ import {
   deletePropertyBulk,
   deletePropertyController,
   getPropertyByID,
-  getPropertyController,
   getProperyPaginationController,
   updateProperty,
 } from '../controller/property.controller.ts';

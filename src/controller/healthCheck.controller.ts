@@ -111,12 +111,12 @@ export const healthCheck = asyncHandler(async (_req: Request, res: Response) => 
     system: {
       memoryUsageMB: {
         heapUsed: Math.round(usedHeap / 1024 / 1024),
-        heapTotal: Math.round(mem.heapTotal / 1024 / 1024), // keep for debugging
-        heapLimit: Math.round(heapLimit / 1024 / 1024),     // 🔥 new (real limit)
+        heapTotal: Math.round(mem.heapTotal / 1024 / 1024),
+        heapLimit: Math.round(heapLimit / 1024 / 1024),
         rss: Math.round(mem.rss / 1024 / 1024),
         external: Math.round(mem.external / 1024 / 1024),
       },
-      memoryUsagePercent: Math.round(heapPercent * 100), // now REAL %
+      memoryUsagePercent: Math.round(heapPercent * 100),
       cpuLoadAvg: os.loadavg().map((v) => Math.round(v * 100) / 100),
       platform: `${os.platform()}/${os.arch()}`,
       nodeVersion: process.version,
