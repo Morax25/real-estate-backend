@@ -1,27 +1,25 @@
-import type { ApiErrorProps } from './utils.types.ts';
+import type { ApiErrorProps } from "./utils.types.ts";
 
 class ApiError extends Error {
   statusCode: number;
-  errors: any[];
-  data: null;
+  errors: unknown[];
   success: boolean;
+  isOperational: boolean;
+
   constructor({
     statusCode,
-    message = 'Something went wrong : local',
+    message = 'Something went wrong',
     errors = [],
-    stack = '',
-  }: ApiErrorProps) {
+    isOperational = true,
+  }: ApiErrorProps & { isOperational?: boolean }) {
     super(message);
+
     this.statusCode = statusCode;
-    this.message = message;
     this.errors = errors;
-    this.data = null;
     this.success = false;
-    if (stack) {
-      this.stack = stack;
-    } else {
-      Error.captureStackTrace(this, this.constructor);
-    }
+    this.isOperational = isOperational;
+
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 

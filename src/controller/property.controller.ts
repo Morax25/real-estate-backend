@@ -22,16 +22,6 @@ export const addProperty = asyncHandler(async (req, res) => {
   );
 });
 
-export const getPropertyController = asyncHandler(async (_, res) => {
-  const properties = await getProperties();
-  res.status(HttpCode.OK).json(
-    new ApiResponse({
-      message: 'Properties retrieved successfully',
-      data: properties,
-    })
-  );
-});
-
 export const getPropertyByID = asyncHandler(async (req, res) => {
   const property = await getProperty(req.params.id as string);
   res.status(HttpCode.OK).json(
@@ -53,7 +43,10 @@ export const deletePropertyController = asyncHandler(async (req, res) => {
 });
 
 export const updateProperty = asyncHandler(async (req, res) => {
-  const updatedData = await updatedPropertyService(req.params.id as string, req.body);
+  const updatedData = await updatedPropertyService(
+    req.params.id as string,
+    req.body
+  );
   res.status(HttpCode.OK).json(
     new ApiResponse({
       message: 'Property updated successfully',
@@ -62,24 +55,26 @@ export const updateProperty = asyncHandler(async (req, res) => {
   );
 });
 
-export const deletePropertyBulk = asyncHandler(async(req, res)=>{
-const { ids } = req.body || [];
-if (
-  !Array.isArray(ids) ||
-  ids.length === 0 ||
-  ids.some(id => typeof id !== "string" || id.trim() === "")
-) {
-  throw new ApiError({
-    statusCode: HttpCode.BAD_REQUEST,
-    message: "ids must be a non-empty array of non-empty strings",
-  });
-}
-  const deletedData = await bulkDeleteProperties(req.body.ids)
-  res.status(HttpCode.OK).json(new ApiResponse({
-    message:'Properties deleted successfully',
-    data:deletedData
-  }))
-})
+export const deletePropertyBulk = asyncHandler(async (req, res) => {
+  const { ids } = req.body || [];
+  if (
+    !Array.isArray(ids) ||
+    ids.length === 0 ||
+    ids.some((id) => typeof id !== 'string' || id.trim() === '')
+  ) {
+    throw new ApiError({
+      statusCode: HttpCode.BAD_REQUEST,
+      message: 'ids must be a non-empty array of non-empty strings',
+    });
+  }
+  const deletedData = await bulkDeleteProperties(req.body.ids);
+  res.status(HttpCode.OK).json(
+    new ApiResponse({
+      message: 'Properties deleted successfully',
+      data: deletedData,
+    })
+  );
+});
 
 export const getProperyPaginationController = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
