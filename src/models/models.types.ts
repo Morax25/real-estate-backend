@@ -50,7 +50,6 @@ export interface IReview {
   updatedAt: Date;
 }
 
-export interface IPropertyPopulated
-  extends Omit<IProperty, 'reviews'> {
+export interface IPropertyPopulated extends Omit<IProperty, 'reviews'> {
   reviews: IReview[];
 }
