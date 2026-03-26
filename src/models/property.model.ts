@@ -67,6 +67,7 @@ const PropertySchema = new Schema<IProperty>(
     keywords: {
       type: [String],
       required: true,
+      default: [],
     },
     images: {
       type: [String],
