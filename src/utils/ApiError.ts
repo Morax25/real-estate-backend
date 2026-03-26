@@ -1,4 +1,4 @@
-import type { ApiErrorProps } from "./utils.types.ts";
+import type { ApiErrorProps } from './utils.types.ts';
 
 class ApiError extends Error {
   statusCode: number;
