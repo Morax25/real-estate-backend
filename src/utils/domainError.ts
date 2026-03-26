@@ -1,4 +1,4 @@
-import { HttpCode, type HttpCodeValue } from "./statusCode.ts";
+import { HttpCode, type HttpCodeValue } from './statusCode.ts';
 
 export type DomainErrorCode =
   | 'NOT_FOUND'

@@ -4,7 +4,7 @@ import ApiError from '../utils/ApiError.ts';
 
 export const validate = (schema: z.ZodTypeAny) =>
   asyncHandler(async (req, _res, next) => {
-    console.log("This is body",req.body)
+    console.log('This is body', req.body);
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
@@ -19,12 +19,10 @@ export const validate = (schema: z.ZodTypeAny) =>
         fieldErrors[field].push(issue.message);
       }
 
-      const errors = Object.entries(fieldErrors).map(
-        ([field, messages]) => ({
-          field,
-          errors: messages,
-        })
-      );
+      const errors = Object.entries(fieldErrors).map(([field, messages]) => ({
+        field,
+        errors: messages,
+      }));
 
       throw new ApiError({
         statusCode: 400,
