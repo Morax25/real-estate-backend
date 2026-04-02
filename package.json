@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "nodemon --watch src/**/*.ts --exec ts-node src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\"",
     "lint": "eslint src/**/*.ts --fix"
@@ -27,6 +27,7 @@
     "mongoose-aggregate-paginate-v2": "^1.1.4",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "tsx": "^4.21.0",
     "winston": "^3.19.0",
     "zod": "^4.1.12"
   },
@@ -43,9 +44,7 @@
     "@typescript-eslint/parser": "^8.49.0",
     "eslint": "^9.39.1",
     "express-rate-limit": "^8.2.1",
-    "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
 }
