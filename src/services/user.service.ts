@@ -29,6 +29,6 @@ export const userLogin = async (user: IUser) => {
   if (!isPasswordMatch) {
     throw new DomainError('UNAUTHORIZED', 'Incorrect password');
   }
-  foundUser.password = undefined as any; // hide password before returning
+  foundUser.password = undefined as any;
   return foundUser;
 };
