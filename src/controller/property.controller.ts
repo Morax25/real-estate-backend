@@ -5,7 +5,7 @@ import {
   getPaginatedProperties,
   getProperty,
   updatedPropertyService,
-} from '../services/property.services.js';
+} from '../services/property.service.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
