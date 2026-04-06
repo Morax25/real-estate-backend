@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -13,10 +12,7 @@
     "exactOptionalPropertyTypes": true,
     "sourceMap": true,
     "types": ["node"],
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

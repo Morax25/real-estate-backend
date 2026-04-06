@@ -6,7 +6,9 @@ export type DomainErrorCode =
   | 'INVALID_STATE'
   | 'OPERATION_NOT_ALLOWED'
   | 'VALIDATION_FAILED'
-  | 'CONFLICT';
+  | 'CONFLICT'
+  | 'UNAUTHORIZED'
+  | 'BAD_REQUEST';
 
 const domainToHttpMap: Record<DomainErrorCode, HttpCodeValue> = {
   NOT_FOUND: HttpCode.NOT_FOUND,
@@ -15,6 +17,8 @@ const domainToHttpMap: Record<DomainErrorCode, HttpCodeValue> = {
   OPERATION_NOT_ALLOWED: HttpCode.FORBIDDEN,
   VALIDATION_FAILED: HttpCode.UNPROCESSABLE,
   CONFLICT: HttpCode.CONFLICT,
+  UNAUTHORIZED: HttpCode.UNAUTHORIZED,
+  BAD_REQUEST: HttpCode.BAD_REQUEST,
 };
 
 export class DomainError extends Error {

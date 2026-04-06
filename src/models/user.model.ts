@@ -1,4 +1,5 @@
-import pkg, { type Model } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import pkg, { Document, type Model } from 'mongoose';
 import type {
   FurnishingType,
   IUser,
@@ -8,9 +9,13 @@ import type {
 
 const { Schema, model, models } = pkg;
 
-export interface IUserModel extends Model<IUser> {}
+export interface IUserDocument extends IUser, Document {
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
 
-const userSchema = new Schema<IUser, IUserModel>(
+export interface IUserModel extends Model<IUserDocument> {}
+
+const userSchema = new Schema<IUserDocument, IUserModel>(
   {
     name: {
       type: String,
@@ -100,5 +105,26 @@ const userSchema = new Schema<IUser, IUserModel>(
   }
 );
 
+userSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  if (!this.password) throw new Error('Password not set on user');
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.pre('save', async function (next) {
+  const user = this as IUserDocument;
+  if (!user.isModified('password')) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    next();
+  } catch (err) {
+    next(err as any);
+  }
+});
+
 export const User: IUserModel =
-  (models.User as IUserModel) || model<IUser, IUserModel>('User', userSchema);
+  (models.User as IUserModel) ||
+  model<IUserDocument, IUserModel>('User', userSchema);
