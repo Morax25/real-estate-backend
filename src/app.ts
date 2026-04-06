@@ -1,16 +1,16 @@
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { errorHandler } from './utils/errorHandler.ts';
-import { healthCheck } from './controller/healthCheck.controller.ts';
-import compression from 'compression';
-import { corsConfig } from './configs/cors.ts';
-import { notFoundHandler } from './controller/notFoundHandler.controller.ts';
 import morgan from 'morgan';
-import { loggerStream } from './configs/logger.ts';
-import userRouter from './routes/user.routes.ts';
-import propertyRouter from './routes/property.routes.ts';
+import { corsConfig } from './configs/cors.js';
+import { loggerStream } from './configs/logger.js';
+import { healthCheck } from './controller/healthCheck.controller.js';
+import { notFoundHandler } from './controller/notFoundHandler.controller.js';
+import propertyRouter from './routes/property.routes.js';
+import userRouter from './routes/user.routes.js';
+import { errorHandler } from './utils/errorHandler.js';
 
 const app = express();
 

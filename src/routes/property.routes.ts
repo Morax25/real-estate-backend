@@ -1,9 +1,4 @@
 import { Router } from 'express';
-import { validate } from '../middleware/validator.middleware.ts';
-import {
-  createPropertySchema,
-  updatePropertySchema,
-} from '../validators/property.validator.ts';
 import {
   addProperty,
   deletePropertyBulk,
@@ -11,7 +6,12 @@ import {
   getPropertyByID,
   getProperyPaginationController,
   updateProperty,
-} from '../controller/property.controller.ts';
+} from '../controller/property.controller.js';
+import { validate } from '../middleware/validator.middleware.js';
+import {
+  createPropertySchema,
+  updatePropertySchema,
+} from '../validators/property.validator.js';
 
 const router = Router();
 

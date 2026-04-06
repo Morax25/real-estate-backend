@@ -1,13 +1,13 @@
 import type {
   ErrorRequestHandler,
+  NextFunction,
   Request,
   Response,
-  NextFunction,
 } from 'express';
 import mongoose from 'mongoose';
-import ApiError from './ApiError.ts';
-import { DomainError } from './domainError.ts';
-import { logger } from '../configs/logger.ts';
+import { logger } from '../configs/logger.js';
+import ApiError from './ApiError.js';
+import { DomainError } from './domainError.js';
 
 const isDuplicateKeyError = (
   err: unknown

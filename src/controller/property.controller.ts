@@ -3,14 +3,13 @@ import {
   createProperty,
   deleteProperty,
   getPaginatedProperties,
-  getProperties,
   getProperty,
   updatedPropertyService,
-} from '../services/property.services.ts';
-import ApiError from '../utils/ApiError.ts';
-import ApiResponse from '../utils/ApiResponse.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { HttpCode } from '../utils/statusCode.ts';
+} from '../services/property.services.js';
+import ApiError from '../utils/ApiError.js';
+import ApiResponse from '../utils/ApiResponse.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { HttpCode } from '../utils/statusCode.js';
 
 export const addProperty = asyncHandler(async (req, res) => {
   const property = await createProperty(req.body);
