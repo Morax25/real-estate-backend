@@ -1,7 +1,7 @@
-import type { IProperty } from '../models/models.types.ts';
-import { Property } from '../models/property.model.ts';
-import { DomainError } from '../utils/domainError.ts';
-import type { UpdatePropertyInput } from '../validators/property.validator.ts';
+import type { IProperty } from '../models/models.types.js';
+import { Property } from '../models/property.model.js';
+import { DomainError } from '../utils/domainError.js';
+import type { UpdatePropertyInput } from '../validators/property.validator.js';
 
 export const createProperty = async (data: IProperty) => {
   const property = new Property(data);
@@ -65,15 +65,15 @@ export const getPaginatedProperties = async (page: number, limit: number) => {
   if (total === 0) {
     throw new DomainError('NOT_FOUND', 'No properties found');
   }
-   return {
+  return {
     data: properties,
-    meta:{
+    meta: {
       total,
       page,
       limit,
-      totalPages:Math.ceil(total/limit),
-      hasNextPage:page < Math.ceil(total/limit),
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page < Math.ceil(total / limit),
       hasPrevPage: page > 1,
-    }
-   }
+    },
+  };
 };

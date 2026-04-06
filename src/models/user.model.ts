@@ -1,10 +1,10 @@
 import pkg, { type Model } from 'mongoose';
 import type {
-  IUser,
-  UserRole,
-  PropertyType,
   FurnishingType,
-} from './user.types.ts';
+  IUser,
+  PropertyType,
+  UserRole,
+} from './user.types.js';
 
 const { Schema, model, models } = pkg;
 

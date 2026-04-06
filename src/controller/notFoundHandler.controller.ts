@@ -1,6 +1,6 @@
-import ApiResponse from '../utils/ApiResponse.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { HttpCode } from '../utils/statusCode.ts';
+import ApiResponse from '../utils/ApiResponse.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { HttpCode } from '../utils/statusCode.js';
 
 export const notFoundHandler = asyncHandler(async (req, res) => {
   const response = new ApiResponse({

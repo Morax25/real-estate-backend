@@ -1,15 +1,14 @@
-import app from './app.ts';
-import { PORT } from './configs/env.ts';
-import connectDB from './db/index.ts';
-import { logger } from './configs/logger.ts';
+import app from './app.js';
+import { PORT } from './configs/env.js';
+import { logger } from './configs/logger.js';
+import connectDB from './db/index.js';
 
 let server: ReturnType<typeof app.listen> | null = null;
 
 const MAX_RETRIES = 5;
 const BASE_DELAY = 2000;
 
-const wait = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const connectWithRetry = async () => {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
@@ -22,13 +21,13 @@ const connectWithRetry = async () => {
       logger.error({
         message: 'Database connection failed',
         attempt,
-        error
+        error,
       });
 
       if (attempt === MAX_RETRIES) {
         logger.error({
           message: 'Max DB connection attempts reached. Exiting process.',
-          attempts: attempt
+          attempts: attempt,
         });
         process.exit(1);
       }
@@ -37,7 +36,7 @@ const connectWithRetry = async () => {
 
       logger.warn({
         message: 'Retrying database connection',
-        nextAttemptInMs: delay
+        nextAttemptInMs: delay,
       });
 
       await wait(delay);
@@ -51,7 +50,7 @@ const startServer = async () => {
   server = app.listen(PORT, () => {
     logger.info({
       message: 'Server started successfully',
-      port: PORT
+      port: PORT,
     });
   });
 };
@@ -70,7 +69,7 @@ const gracefulShutdown = (signal: string) => {
 
   setTimeout(() => {
     logger.error({
-      message: 'Graceful shutdown timeout exceeded. Forcing exit.'
+      message: 'Graceful shutdown timeout exceeded. Forcing exit.',
     });
     process.exit(1);
   }, 10000);
@@ -82,7 +81,7 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('uncaughtException', (error) => {
   logger.error({
     message: 'Uncaught Exception',
-    error
+    error,
   });
   process.exit(1);
 });
@@ -90,7 +89,7 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason) => {
   logger.error({
     message: 'Unhandled Rejection',
-    reason
+    reason,
   });
   process.exit(1);
 });

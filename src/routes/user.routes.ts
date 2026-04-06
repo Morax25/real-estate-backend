@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { login, signUp } from '../controller/user.controller.ts';
-import { validate } from '../middleware/validator.middleware.ts';
-import { loginSchema, signupSchema } from '../validators/user.validator.ts';
+import { login, signUp } from '../controller/user.controller.js';
+import { validate } from '../middleware/validator.middleware.js';
+import { loginSchema, signupSchema } from '../validators/user.validator.js';
 const router = Router();
 
 //user register and login routes

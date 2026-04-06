@@ -1,4 +1,4 @@
-import type { ApiResponseProps } from './utils.types.ts';
+import type { ApiResponseProps } from './utils.types.js';
 
 class ApiResponse<T = any> {
   success: boolean;
