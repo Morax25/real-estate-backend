@@ -99,10 +99,6 @@ const userSchema = new Schema<IUserDocument, IUserModel>(
     lastLogin: {
       type: Date,
     },
-    refreshToken: {
-      type: String,
-      select: false,
-    },
   },
   {
     timestamps: true,
