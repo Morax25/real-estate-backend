@@ -2,7 +2,6 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import helmet from 'helmet';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
@@ -19,7 +18,6 @@ app.use(morgan('combined', { stream: loggerStream }));
 
 //middlewares
 app.use(compression());
-app.use(helmet());
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(express.json({ limit: '16kb' }));
