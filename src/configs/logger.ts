@@ -27,25 +27,31 @@ const prodFormat = combine(
   logFormat
 );
 
-// Winston transports array
+// Only use file transport **locally** (dev machine)
 const transports: winston.transport[] = [
-  // Always log to console (Vercel picks this up)
   new winston.transports.Console({
     format: isDev ? devFormat : prodFormat,
   }),
 ];
 
-// Only add file transports locally
 if (isDev) {
-  const fs = await import('fs'); // dynamic import so it doesn't break ESM in Vercel
-  if (!fs.existsSync('logs')) {
-    fs.mkdirSync('logs'); // create logs folder locally
-  }
+  // Wrap file transport in try/catch to be extra safe
+  try {
+    const fs = await import('fs');
+    if (!fs.existsSync('logs')) {
+      fs.mkdirSync('logs');
+    }
 
-  transports.push(
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/app.log' })
-  );
+    transports.push(
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+      }),
+      new winston.transports.File({ filename: 'logs/app.log' })
+    );
+  } catch (err) {
+    console.warn('Could not create file transports, skipping:', err);
+  }
 }
 
 export const logger = winston.createLogger({
