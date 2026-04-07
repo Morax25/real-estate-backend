@@ -1,22 +1,27 @@
+// src/configs/rateLimiter.ts
 import type { RateLimitRequestHandler } from 'express-rate-limit';
 import rateLimit from 'express-rate-limit';
-import type { Request } from 'express';
 
 const ROLE_LIMITS: Record<string, { windowMs: number; max: number }> = {
-  admin: { windowMs: 60 * 1000, max: 1000 }, // 1 min, 1000 req
-  agent: { windowMs: 60 * 1000, max: 300 }, // 1 min, 300 req
-  user: { windowMs: 60 * 1000, max: 100 }, // 1 min, 100 req
-  guest: { windowMs: 15 * 60 * 1000, max: 50 }, // 15 min, 50 req
+  admin: { windowMs: 60 * 1000, max: 1000 },
+  agent: { windowMs: 60 * 1000, max: 300 },
+  user: { windowMs: 60 * 1000, max: 100 },
+  guest: { windowMs: 15 * 60 * 1000, max: 50 },
 };
 
 export const getRateLimiter = (
   role: string = 'guest'
 ): RateLimitRequestHandler => {
-  const { windowMs, max } = ROLE_LIMITS[role] || ROLE_LIMITS['guest'];
+  const roleConfig = (ROLE_LIMITS[role] ?? ROLE_LIMITS['guest']) as {
+    windowMs: number;
+    max: number;
+  };
+  const { windowMs, max } = roleConfig;
+
   return rateLimit({
     windowMs,
     max,
-    keyGenerator: (req: Request) => req.user?.id || req.ip,
+    keyGenerator: (req) => req.user?._id?.toString() ?? req.ip ?? 'unknown',
     standardHeaders: true,
     legacyHeaders: false,
     message: {
