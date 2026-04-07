@@ -47,4 +47,5 @@ export interface IUser {
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
+  refreshToken: string;
 }

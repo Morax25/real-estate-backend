@@ -5,13 +5,20 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { HttpCode } from '../utils/statusCode.js';
 
 export const login = asyncHandler(async (req, res) => {
-  const user = await userLogin(req.body);
-  if (!user) {
-    throw new ApiError({
-      statusCode: HttpCode.UNAUTHORIZED,
-      message: 'Invalid credentials',
-    });
-  }
+  const { user, accessToken, refreshToken } = await userLogin(req.body);
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 10 * 24 * 60 * 60 * 1000,
+  });
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 15 * 60 * 1000,
+  });
   res.status(HttpCode.OK).json(
     new ApiResponse({
       message: `Login successful`,
