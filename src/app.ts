@@ -5,6 +5,7 @@ import express from 'express';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
+import { DB_NAME, MONGODB_URI } from './constant.js';
 import { healthCheck } from './controller/healthCheck.controller.js';
 import { notFoundHandler } from './controller/notFoundHandler.controller.js';
 import propertyRouter from './routes/property.routes.js';
@@ -30,6 +31,25 @@ app.get('/health', healthCheck);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/property', propertyRouter);
 
+app.get('/api/test-connection', async (req, res) => {
+  try {
+    console.log('Testing connection...');
+    const mongoose = require('mongoose');
+
+    if (mongoose.connection.readyState === 1) {
+      return res.json({ status: 'already connected' });
+    }
+
+    const testUrl = `${MONGODB_URI}/${DB_NAME}?retryWrites=true&w=majority`;
+    await mongoose.connect(testUrl, { serverSelectionTimeoutMS: 5000 });
+    res.json({
+      status: 'connected',
+      readyState: mongoose.connection.readyState,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
 // 404 fallback
 app.use(notFoundHandler);
 app.use(errorHandler);
