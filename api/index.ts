@@ -2,7 +2,7 @@ import serverless from 'serverless-http';
 import app from '../src/app.js';
 import { connectDB } from '../src/db/index.js';
 
-const serverlessApp = serverless(app);
+const serverlessApp = serverless(app, { binary: false });
 
 const handler = async (req: any, res: any) => {
   try {
@@ -15,7 +15,7 @@ const handler = async (req: any, res: any) => {
     });
   }
 
-  return serverlessApp(req, res);
+  return await serverlessApp(req, res); // ← await was missing
 };
 
 export default handler;

@@ -8,6 +8,7 @@ import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
 import { healthCheck } from './controller/healthCheck.controller.js';
 import { notFoundHandler } from './controller/notFoundHandler.controller.js';
+import { connectDB } from './db/index.js';
 import propertyRouter from './routes/property.routes.js';
 import userRouter from './routes/user.routes.js';
 import { errorHandler } from './utils/errorHandler.js';
@@ -27,6 +28,19 @@ app.use(express.static('public'));
 app.use(cookieParser());
 
 //Upcoming Routes section
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Database connection failed' });
+  }
+});
+
+// routes below this
 app.get('/health', healthCheck);
 
 // Test connection endpoint
