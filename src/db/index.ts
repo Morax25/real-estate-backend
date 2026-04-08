@@ -49,6 +49,7 @@ export async function connectDB() {
   } catch (error) {
     console.error('❌ DB connection failed:', error);
     cached!.promise = null;
+    cached!.conn = null;
     throw error;
   }
 
