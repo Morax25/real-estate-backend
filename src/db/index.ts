@@ -1,64 +1,57 @@
-import mongoose from 'mongoose';
-import { DB_NAME, MONGODB_URI } from '../constant.js';
+import mongoose, { Mongoose } from 'mongoose';
 
-const connectDB = async () => {
-  console.log('connectDB() called');
-  console.log('DB_NAME:', DB_NAME);
-  console.log('MONGODB_URI exists:', !!MONGODB_URI);
-  console.log('Initial readyState:', mongoose.connection.readyState);
+const MONGODB_URI = process.env.MONGODB_URI as string;
+const DB_NAME = process.env.DB_NAME as string;
 
-  if (!DB_NAME || !MONGODB_URI) {
-    throw new Error('Missing DB_NAME or MONGODB_URI env variable');
+if (!MONGODB_URI || !DB_NAME) {
+  throw new Error('Missing MONGODB_URI or DB_NAME');
+}
+
+type MongooseCache = {
+  conn: Mongoose | null;
+  promise: Promise<Mongoose> | null;
+};
+
+declare global {
+  var _mongoose: MongooseCache | undefined;
+}
+
+const globalCache = globalThis as typeof globalThis & {
+  _mongoose?: MongooseCache;
+};
+
+if (!globalCache._mongoose) {
+  globalCache._mongoose = {
+    conn: null,
+    promise: null,
+  };
+}
+
+const connectDB = async (): Promise<Mongoose> => {
+  if (globalCache._mongoose!.conn) {
+    return globalCache._mongoose!.conn;
   }
 
-  if (mongoose.connection.readyState === 1) {
-    console.log('✅ Already connected');
-    return mongoose.connection;
-  }
+  if (!globalCache._mongoose!.promise) {
+    const uri = `${MONGODB_URI.replace(/\/$/, '')}/${DB_NAME}`;
 
-  const connectionString = `${MONGODB_URI.replace(/\/$/, '')}/${DB_NAME}?retryWrites=true&w=majority`;
-  console.log(
-    'Connection string (masked):',
-    connectionString.replace(/:[^:/@]+@/, ':***@')
-  );
-
-  try {
-    console.log('🔄 About to call mongoose.connect()...');
-    const startTime = Date.now();
-
-    const connection = await mongoose.connect(connectionString, {
-      serverSelectionTimeoutMS: 15000,
-      socketTimeoutMS: 60000,
-      connectTimeoutMS: 15000,
-      family: 4,
-      maxPoolSize: 3,
+    globalCache._mongoose!.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+      maxPoolSize: 5,
       minPoolSize: 1,
       maxIdleTimeMS: 60000,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 60000,
       retryWrites: true,
       w: 'majority',
-      heartbeatFrequencyMS: 30000,
     });
+  }
 
-    const duration = Date.now() - startTime;
-    console.log(`✅ mongoose.connect() resolved after ${duration}ms`);
-    console.log('readyState after connect:', mongoose.connection.readyState);
-
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ Connection error event:', err.message);
-    });
-
-    mongoose.connection.on('disconnected', () => {
-      console.warn('⚠️ Disconnected event fired');
-    });
-
-    return connection;
+  try {
+    globalCache._mongoose!.conn = await globalCache._mongoose!.promise;
+    return globalCache._mongoose!.conn;
   } catch (err) {
-    console.error('❌ mongoose.connect() threw error');
-    console.error(
-      'Error type:',
-      err instanceof Error ? err.constructor.name : typeof err
-    );
-    console.error('Error message:', err instanceof Error ? err.message : err);
+    globalCache._mongoose!.promise = null;
     throw err;
   }
 };
