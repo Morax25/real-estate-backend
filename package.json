@@ -8,10 +8,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch api/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\"",
-    "lint": "eslint api/**/*.ts --fix"
+    "lint": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
