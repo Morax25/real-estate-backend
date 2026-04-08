@@ -9,49 +9,45 @@ type MongooseCache = {
 };
 
 declare global {
-  var mongoose: MongooseCache | undefined;
+  var _mongoose: MongooseCache | undefined;
 }
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = {
-    conn: null,
-    promise: null,
-  };
+function getCache(): MongooseCache {
+  if (!global._mongoose) {
+    global._mongoose = { conn: null, promise: null };
+  }
+  return global._mongoose; // always read live from global
 }
 
 export async function connectDB() {
-  if (cached!.conn) {
+  const cache = getCache(); // fresh reference on every call
+
+  if (cache.conn) {
     console.log('✅ Using cached DB connection');
-    return cached!.conn;
+    return cache.conn;
   }
 
-  if (!cached!.promise) {
+  if (!cache.promise) {
     console.log('⚡ Creating new DB connection...');
-
-    cached!.promise = mongoose.connect(MONGODB_URI, {
+    cache.promise = mongoose.connect(MONGODB_URI, {
       dbName: DB_NAME,
-      bufferCommands: false,
-
-      // 🔥 critical for Vercel
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-
-      maxPoolSize: 5,
+      // removed bufferCommands: false
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 30000,
+      maxPoolSize: 3,
     });
   }
 
   try {
-    cached!.conn = await cached!.promise;
+    cache.conn = await cache.promise;
     console.log('✅ DB connected successfully');
   } catch (error) {
     console.error('❌ DB connection failed:', error);
-    cached!.promise = null;
-    cached!.conn = null;
+    cache.promise = null;
+    cache.conn = null;
     throw error;
   }
 
-  return cached!.conn;
+  return cache.conn;
 }
