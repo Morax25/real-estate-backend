@@ -2,7 +2,6 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
-import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
@@ -15,10 +14,8 @@ import { errorHandler } from './utils/errorHandler.js';
 
 const app = express();
 
+// ─── Security & parsing ──────────────────────────────────────────────────────
 app.use(cors(corsConfig));
-app.use(morgan('combined', { stream: loggerStream }));
-
-//middlewares
 app.use(compression());
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
@@ -26,42 +23,28 @@ app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
 app.use(cookieParser());
+app.use(morgan('combined', { stream: loggerStream }));
 
-//Upcoming Routes section
-
+// ─── DB middleware — every request waits for connection ──────────────────────
+// DB middleware
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (err) {
-    res.status(500).json({ success: false, message: 'DB connection failed' });
+    next(err); // ← was res.status(500).json(...), now flows through errorHandler
   }
 });
 
-// routes below this
+// ─── Routes ──────────────────────────────────────────────────────────────────
 app.get('/health', healthCheck);
-
-// Test connection endpoint
-app.get('/api/debug-connection', async (req, res) => {
-  try {
-    const result = await mongoose.connection
-      .collection('properties')
-      .findOne({});
-    res.json({ success: true, result });
-  } catch (err) {
-    const error = err as Error;
-    res.status(500).json({
-      error: error.message,
-      readyState: mongoose.connection.readyState,
-    });
-  }
-});
-
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/property', propertyRouter);
 
-// 404 fallback
+// ─── 404 → error pipeline ────────────────────────────────────────────────────
 app.use(notFoundHandler);
+
+// ─── Global error handler — must be last ────────────────────────────────────
 app.use(errorHandler);
 
 export default app;

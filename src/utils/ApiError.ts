@@ -1,24 +1,26 @@
-import type { ApiErrorProps } from './utils.types.js';
-
 class ApiError extends Error {
-  statusCode: number;
-  errors: unknown[];
-  success: boolean;
-  isOperational: boolean;
+  readonly statusCode: number;
+  readonly errors: unknown[];
+  readonly success = false;
+  readonly isOperational: boolean;
 
   constructor({
     statusCode,
     message = 'Something went wrong',
     errors = [],
     isOperational = true,
-  }: ApiErrorProps & { isOperational?: boolean }) {
+  }: {
+    statusCode: number;
+    message?: string;
+    errors?: unknown[];
+    isOperational?: boolean;
+  }) {
     super(message);
-
+    this.name = 'ApiError';
     this.statusCode = statusCode;
     this.errors = errors;
-    this.success = false;
     this.isOperational = isOperational;
-
+    Object.setPrototypeOf(this, new.target.prototype);
     Error.captureStackTrace(this, this.constructor);
   }
 }

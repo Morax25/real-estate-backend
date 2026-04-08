@@ -9,11 +9,69 @@ import { logger } from '../configs/logger.js';
 import ApiError from './ApiError.js';
 import { DomainError } from './domainError.js';
 
-const isDuplicateKeyError = (
-  err: unknown
-): err is mongoose.mongo.MongoServerError => {
-  return err instanceof mongoose.mongo.MongoServerError && err.code === 11000;
-};
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_VERCEL = process.env.VERCEL === '1';
+
+function normalise(err: unknown): {
+  status: number;
+  message: string;
+  errors?: unknown;
+  isOperational: boolean;
+} {
+  if (err instanceof ApiError) {
+    return {
+      status: err.statusCode,
+      message: err.message,
+      errors: err.errors.length ? err.errors : undefined,
+      isOperational: err.isOperational,
+    };
+  }
+
+  if (err instanceof DomainError) {
+    return {
+      status: err.httpCode,
+      message: err.message,
+      errors: err.details,
+      isOperational: true,
+    };
+  }
+
+  if (err instanceof mongoose.Error.ValidationError) {
+    return {
+      status: 400,
+      message: 'Validation failed',
+      errors: Object.values(err.errors).map((e) => e.message),
+      isOperational: true,
+    };
+  }
+
+  if (err instanceof mongoose.Error.CastError) {
+    return {
+      status: 400,
+      message: `Invalid ${err.path}: ${err.value}`,
+      isOperational: true,
+    };
+  }
+
+  if (err instanceof mongoose.mongo.MongoServerError && err.code === 11000) {
+    return {
+      status: 409,
+      message: 'Duplicate key error',
+      errors: err.keyValue,
+      isOperational: true,
+    };
+  }
+
+  return {
+    status: 500,
+    message: IS_PRODUCTION
+      ? 'Internal Server Error'
+      : err instanceof Error
+        ? err.message
+        : String(err),
+    isOperational: false,
+  };
+}
 
 export const errorHandler: ErrorRequestHandler = (
   err: unknown,
@@ -21,36 +79,11 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  let status = 500;
-  let message = 'Internal Server Error';
-  let errors: unknown = undefined;
-
-  if (err instanceof ApiError) {
-    status = err.statusCode;
-    message = err.message;
-    errors = err.errors;
-  } else if (err instanceof DomainError) {
-    status = err.httpCode;
-    message = err.message;
-    errors = err.details;
-  } else if (err instanceof mongoose.Error.ValidationError) {
-    status = 400;
-    message = 'Validation failed';
-    errors = Object.values(err.errors).map((e) => e.message);
-  } else if (isDuplicateKeyError(err)) {
-    status = 409;
-    message = 'Duplicate key error';
-    errors = err.keyValue;
-  } else if (err instanceof mongoose.Error.CastError) {
-    status = 400;
-    message = `Invalid ${err.path}: ${err.value}`;
-  }
-
-  const isProduction = process.env.NODE_ENV === 'production';
+  const { status, message, errors, isOperational } = normalise(err);
 
   const logPayload = {
-    message,
     status,
+    message,
     path: req.originalUrl,
     method: req.method,
     requestId: req.headers['x-request-id'],
@@ -64,32 +97,37 @@ export const errorHandler: ErrorRequestHandler = (
     logger.warn(logPayload);
   }
 
-  return res.status(status).json({
+  if (res.headersSent) return;
+
+  res.status(status).json({
     success: false,
     message,
     ...(errors !== undefined && { errors }),
-    ...(!isProduction && status >= 500 && { stack: logPayload.stack }),
+    ...(!IS_PRODUCTION && !isOperational && { stack: logPayload.stack }),
   });
 };
 
-process.on('unhandledRejection', (err: unknown) => {
+// Only exit process on a real persistent server, never on Vercel
+process.on('unhandledRejection', (reason: unknown) => {
   logger.error({
-    message: 'Unhandled rejection — shutting down',
-    error: err instanceof Error ? err.message : err,
-    stack: err instanceof Error ? err.stack : undefined,
-    timestamp: new Date().toISOString(),
+    message: 'Unhandled promise rejection',
+    error: reason instanceof Error ? reason.message : reason,
+    stack: reason instanceof Error ? reason.stack : undefined,
   });
 
-  setTimeout(() => process.exit(1), 1000);
+  if (!IS_VERCEL) {
+    setTimeout(() => process.exit(1), 1000);
+  }
 });
 
 process.on('uncaughtException', (err: Error) => {
   logger.error({
-    message: 'Uncaught exception — shutting down',
+    message: 'Uncaught exception',
     error: err.message,
     stack: err.stack,
-    timestamp: new Date().toISOString(),
   });
 
-  setTimeout(() => process.exit(1), 1000);
+  if (!IS_VERCEL) {
+    setTimeout(() => process.exit(1), 1000);
+  }
 });

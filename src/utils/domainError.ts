@@ -30,23 +30,12 @@ export class DomainError extends Error {
 
   constructor(code: DomainErrorCode, message: string, details?: unknown) {
     super(message);
-    this.name = this.constructor.name;
+    this.name = 'DomainError';
     this.code = code;
     this.httpCode = domainToHttpMap[code];
     this.details = details;
     this.timestamp = new Date().toISOString();
     Object.setPrototypeOf(this, new.target.prototype);
     Error.captureStackTrace(this, this.constructor);
-  }
-
-  toJSON() {
-    return {
-      name: this.name,
-      code: this.code,
-      message: this.message,
-      httpCode: this.httpCode,
-      details: this.details,
-      timestamp: this.timestamp,
-    };
   }
 }
