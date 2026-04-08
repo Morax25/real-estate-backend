@@ -33,7 +33,10 @@ app.use('/api/v1/property', propertyRouter);
 
 app.get('/api/test-connection', async (req, res) => {
   try {
-    console.log('Testing connection...');
+    console.log('🔄 Testing connection...');
+    console.log('MONGODB_URI:', MONGODB_URI ? 'exists' : 'MISSING');
+    console.log('DB_NAME:', DB_NAME);
+
     const mongoose = require('mongoose');
 
     if (mongoose.connection.readyState === 1) {
@@ -41,13 +44,29 @@ app.get('/api/test-connection', async (req, res) => {
     }
 
     const testUrl = `${MONGODB_URI}/${DB_NAME}?retryWrites=true&w=majority`;
-    await mongoose.connect(testUrl, { serverSelectionTimeoutMS: 5000 });
+    console.log(
+      'Connection URL (masked):',
+      testUrl.replace(/:[^:/@]+@/, ':***@')
+    );
+
+    console.log('🔄 Calling mongoose.connect()...');
+    await mongoose.connect(testUrl, {
+      serverSelectionTimeoutMS: 5000,
+    });
+
+    console.log('✅ Connected');
     res.json({
       status: 'connected',
       readyState: mongoose.connection.readyState,
     });
   } catch (err) {
-    res.status(500).json({ error: err });
+    const error = err as Error;
+    console.error('❌ Error:', error.message);
+    console.error('❌ Full error:', error);
+
+    res.status(500).json({
+      error: error.message || 'Unknown error',
+    });
   }
 });
 // 404 fallback
