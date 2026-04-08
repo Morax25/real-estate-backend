@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
-import { DB_NAME, MONGODB_URI } from './constant.js';
 import { healthCheck } from './controller/healthCheck.controller.js';
 import { notFoundHandler } from './controller/notFoundHandler.controller.js';
 import propertyRouter from './routes/property.routes.js';
@@ -31,43 +30,17 @@ app.use(cookieParser());
 app.get('/health', healthCheck);
 
 // Test connection endpoint
-app.get('/api/test-connection', async (req, res) => {
+app.get('/api/debug-connection', async (req, res) => {
   try {
-    console.log('🔄 Testing connection...');
-    console.log('MONGODB_URI exists:', !!MONGODB_URI);
-    console.log('DB_NAME:', DB_NAME);
-
-    if (mongoose.connection.readyState === 1) {
-      return res.json({
-        status: 'already connected',
-        readyState: mongoose.connection.readyState,
-      });
-    }
-
-    const testUrl = `${MONGODB_URI}/${DB_NAME}?retryWrites=true&w=majority`;
-    console.log(
-      'Connection URL (masked):',
-      testUrl.replace(/:[^:/@]+@/, ':***@')
-    );
-
-    console.log('🔄 Calling mongoose.connect()...');
-    await mongoose.connect(testUrl, {
-      serverSelectionTimeoutMS: 5000,
-    });
-
-    console.log('✅ Connected');
-    res.json({
-      status: 'connected',
-      readyState: mongoose.connection.readyState,
-    });
+    const result = await mongoose.connection
+      .collection('properties')
+      .findOne({});
+    res.json({ success: true, result });
   } catch (err) {
     const error = err as Error;
-    console.error('❌ Error message:', error.message);
-    console.error('❌ Error name:', error.name);
-
     res.status(500).json({
-      error: error.message || 'Unknown error',
-      name: error.name,
+      error: error.message,
+      readyState: mongoose.connection.readyState,
     });
   }
 });

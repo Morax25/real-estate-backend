@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import app from './app.js';
 import { PORT } from './configs/env.js';
 import { logger } from './configs/logger.js';
@@ -11,6 +12,10 @@ const BASE_DELAY = 2000;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const connectWithRetry = async () => {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+    console.log('Closed stale connection');
+  }
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       logger.info({ message: 'Connecting to database', attempt });
