@@ -1,12 +1,13 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
+import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
 import { healthCheck } from './controller/healthCheck.controller.js';
 import { notFoundHandler } from './controller/notFoundHandler.controller.js';
-import { connectDB } from './db/index.js';
+import { Property } from './models/property.model.js';
 import propertyRouter from './routes/property.routes.js';
 import userRouter from './routes/user.routes.js';
 import { errorHandler } from './utils/errorHandler.js';
@@ -25,15 +26,8 @@ app.use(express.static('public'));
 app.use(cookieParser());
 // ✅ compression removed — Vercel CDN handles this at the edge
 
-// DB middleware
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
+console.log('mongoose ready:', mongoose.connection.readyState);
+console.log('model ready:', Property.db.readyState);
 
 app.get('/health', healthCheck);
 app.use('/api/v1/user', userRouter);

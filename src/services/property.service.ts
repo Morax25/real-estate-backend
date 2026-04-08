@@ -1,20 +1,32 @@
+import { connectDB } from '../db/index.js';
 import type { IProperty } from '../models/models.types.js';
-import { Property } from '../models/property.model.js';
+import { getPropertyModel } from '../models/property.model.js';
 import { DomainError } from '../utils/domainError.js';
 import type { UpdatePropertyInput } from '../validators/property.validator.js';
 
+// 🔥 helper
+async function getPropertyCollection() {
+  await connectDB();
+  return getPropertyModel();
+}
+
 export const createProperty = async (data: IProperty) => {
+  const Property = await getPropertyCollection();
+
   const property = new Property(data);
   await property.save();
   return property;
 };
 
 export const getProperties = async () => {
-  const properties = await Property.find();
-  return properties;
+  const Property = await getPropertyCollection();
+
+  return await Property.find();
 };
 
 export const getProperty = async (id: string) => {
+  const Property = await getPropertyCollection();
+
   const property = await Property.findById(id);
   if (!property) {
     throw new DomainError('NOT_FOUND', `Property not found`);
@@ -23,6 +35,8 @@ export const getProperty = async (id: string) => {
 };
 
 export const deleteProperty = async (id: string) => {
+  const Property = await getPropertyCollection();
+
   const property = await Property.findByIdAndDelete(id);
   if (!property) {
     throw new DomainError('NOT_FOUND', `Property not found`);
@@ -34,37 +48,50 @@ export const updatedPropertyService = async (
   id: string,
   data: UpdatePropertyInput
 ) => {
+  const Property = await getPropertyCollection();
+
   const updated = await Property.findByIdAndUpdate(
     id,
     { $set: data },
     { new: true, runValidators: true }
   );
+
   if (!updated) {
     throw new DomainError('NOT_FOUND', `Property not found`);
   }
+
   return updated;
 };
 
 export const bulkDeleteProperties = async (ids: string[]) => {
+  const Property = await getPropertyCollection();
+
   const result = await Property.deleteMany({ _id: { $in: ids } });
+
   if (result.deletedCount === 0) {
     throw new DomainError(
       'NOT_FOUND',
       'No properties found for the provided IDs'
     );
   }
+
   return { deletedCount: result.deletedCount };
 };
 
 export const getPaginatedProperties = async (page: number, limit: number) => {
+  const Property = await getPropertyCollection();
+
   const skip = (page - 1) * limit;
+
   const [properties, total] = await Promise.all([
     Property.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
     Property.countDocuments(),
   ]);
+
   if (total === 0) {
     throw new DomainError('NOT_FOUND', 'No properties found');
   }
+
   return {
     data: properties,
     meta: {

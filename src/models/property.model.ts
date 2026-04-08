@@ -1,4 +1,4 @@
-import pkg, { type Model } from 'mongoose';
+import mongoose, { type Model } from 'mongoose';
 import type {
   ICenterDetails,
   IPriceHistoryItem,
@@ -6,8 +6,9 @@ import type {
   ISeatingOptions,
 } from './models.types.ts';
 
-const { Schema, model, models, Types } = pkg;
+const { Schema, Types } = mongoose;
 
+// ---- Schemas (unchanged) ----
 const PriceHistorySchema = new Schema<IPriceHistoryItem>(
   {
     price: { type: Number, required: true },
@@ -35,6 +36,7 @@ const SeatingOptionsSchema = new Schema<ISeatingOptions>(
   { _id: false }
 );
 
+// ---- Main Schema ----
 const PropertySchema = new Schema<IProperty>(
   {
     title: { type: String, required: true },
@@ -87,6 +89,10 @@ const PropertySchema = new Schema<IProperty>(
 
 PropertySchema.index({ currentPrice: 1 });
 
-export const Property: Model<IProperty> =
-  (models.Property as Model<IProperty>) ||
-  model<IProperty>('Property', PropertySchema);
+// ✅ ✅ ✅ THIS IS THE IMPORTANT PART
+export function getPropertyModel(): Model<IProperty> {
+  return (
+    mongoose.models.Property ||
+    mongoose.model<IProperty>('Property', PropertySchema)
+  );
+}
