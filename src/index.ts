@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import app from './app.js';
 import { PORT } from './configs/env.js';
 import { logger } from './configs/logger.js';
-import connectDB from './db/index.js';
+import { connectDB } from './db/index.js';
 
 let server: ReturnType<typeof app.listen> | null = null;
 
