@@ -78,11 +78,21 @@ export const deletePropertyBulk = asyncHandler(async (req, res) => {
 export const getProperyPaginationController = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
-  const properties = await getPaginatedProperties(page, limit);
-  res.status(HttpCode.OK).json(
-    new ApiResponse({
-      message: 'Properties retrieved successfully',
-      data: properties,
-    })
-  );
+
+  console.log('📄 page:', page, 'limit:', limit);
+
+  let properties;
+
+  try {
+    properties = await getPaginatedProperties(page, limit);
+    console.log('✅ properties:', properties);
+  } catch (err) {
+    console.error('❌ PAGINATION ERROR:', err);
+    throw err; // let global handler catch it
+  }
+
+  res.status(200).json({
+    success: true,
+    data: properties,
+  });
 });
