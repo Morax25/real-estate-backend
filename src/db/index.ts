@@ -16,11 +16,11 @@ function getCache(): MongooseCache {
   if (!global._mongoose) {
     global._mongoose = { conn: null, promise: null };
   }
-  return global._mongoose; // always read live from global
+  return global._mongoose;
 }
 
 export async function connectDB() {
-  const cache = getCache(); // fresh reference on every call
+  const cache = getCache();
 
   if (cache.conn) {
     console.log('✅ Using cached DB connection');
@@ -31,16 +31,23 @@ export async function connectDB() {
     console.log('⚡ Creating new DB connection...');
     cache.promise = mongoose.connect(MONGODB_URI, {
       dbName: DB_NAME,
-      // removed bufferCommands: false
+      maxIdleTimeMS: 10000, // ← closes idle sockets before Vercel kills them
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
-      socketTimeoutMS: 30000,
+      socketTimeoutMS: 20000, // ← lowered from 30000, must be < function maxDuration
       maxPoolSize: 3,
     });
   }
 
   try {
     cache.conn = await cache.promise;
+
+    // ✅ THE critical fix — stops the MongoDB TCP socket from keeping
+    // the Node event loop alive after a response is sent.
+    // Without this, Vercel sees the event loop is still active and
+    // waits until maxDuration (30s) before killing the function.
+    (mongoose.connection.getClient() as any).topology?.unref?.();
+
     console.log('✅ DB connected successfully');
   } catch (error) {
     console.error('❌ DB connection failed:', error);
