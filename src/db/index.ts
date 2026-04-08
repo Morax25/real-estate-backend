@@ -1,72 +1,66 @@
 import mongoose from 'mongoose';
+import { DB_NAME, MONGODB_URI } from '../constant.js';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = process.env.DB_NAME!;
+const connectDB = async () => {
+  console.log('connectDB() called');
+  console.log('DB_NAME:', DB_NAME);
+  console.log('MONGODB_URI exists:', !!MONGODB_URI);
+  console.log('Initial readyState:', mongoose.connection.readyState);
 
-// ✅ Prevent mongoose from buffering (CRITICAL for serverless)
-mongoose.set('bufferCommands', false);
-
-type MongooseCache = {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-};
-
-declare global {
-  // eslint-disable-next-line no-var
-  var _mongoose: MongooseCache | undefined;
-}
-
-function getCache(): MongooseCache {
-  if (!global._mongoose) {
-    global._mongoose = { conn: null, promise: null };
-  }
-  return global._mongoose;
-}
-
-export async function connectDB() {
-  const cache = getCache();
-
-  // ✅ Reuse existing connection
-  if (cache.conn) {
-    return cache.conn;
+  if (!DB_NAME || !MONGODB_URI) {
+    throw new Error('Missing DB_NAME or MONGODB_URI env variable');
   }
 
-  // ✅ Create connection promise once
-  if (!cache.promise) {
-    console.log('⚡ Creating new DB connection...');
-
-    cache.promise = mongoose.connect(MONGODB_URI, {
-      dbName: DB_NAME,
-
-      // ✅ tuned for serverless (fast fail)
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
-      socketTimeoutMS: 10000,
-
-      // ✅ small pool for lambda
-      maxPoolSize: 3,
-
-      // optional but helpful
-      family: 4, // force IPv4 (fixes DNS delays sometimes)
-    });
+  if (mongoose.connection.readyState === 1) {
+    console.log('✅ Already connected');
+    return mongoose.connection;
   }
+
+  const connectionString = `${MONGODB_URI.replace(/\/$/, '')}/${DB_NAME}?retryWrites=true&w=majority`;
+  console.log(
+    'Connection string (masked):',
+    connectionString.replace(/:[^:/@]+@/, ':***@')
+  );
 
   try {
-    cache.conn = await cache.promise;
+    console.log('🔄 About to call mongoose.connect()...');
+    const startTime = Date.now();
 
-    console.log('✅ DB connected');
+    const connection = await mongoose.connect(connectionString, {
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 60000,
+      connectTimeoutMS: 15000,
+      family: 4,
+      maxPoolSize: 3,
+      minPoolSize: 1,
+      maxIdleTimeMS: 60000,
+      retryWrites: true,
+      w: 'majority',
+      heartbeatFrequencyMS: 30000,
+    });
 
-    // ✅ Debug (you can remove later)
-    console.log('readyState:', mongoose.connection.readyState);
-    console.log('host:', mongoose.connection.host);
-  } catch (error) {
-    console.error('❌ DB connection failed:', error);
+    const duration = Date.now() - startTime;
+    console.log(`✅ mongoose.connect() resolved after ${duration}ms`);
+    console.log('readyState after connect:', mongoose.connection.readyState);
 
-    cache.promise = null;
-    cache.conn = null;
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ Connection error event:', err.message);
+    });
 
-    throw error;
+    mongoose.connection.on('disconnected', () => {
+      console.warn('⚠️ Disconnected event fired');
+    });
+
+    return connection;
+  } catch (err) {
+    console.error('❌ mongoose.connect() threw error');
+    console.error(
+      'Error type:',
+      err instanceof Error ? err.constructor.name : typeof err
+    );
+    console.error('Error message:', err instanceof Error ? err.message : err);
+    throw err;
   }
+};
 
-  return cache.conn;
-}
+export default connectDB;
