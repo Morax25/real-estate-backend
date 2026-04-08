@@ -2,6 +2,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
+import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { corsConfig } from './configs/cors.js';
 import { loggerStream } from './configs/logger.js';
@@ -28,19 +29,19 @@ app.use(cookieParser());
 
 //Upcoming Routes section
 app.get('/health', healthCheck);
-app.use('/api/v1/user', userRouter);
-app.use('/api/v1/property', propertyRouter);
 
+// Test connection endpoint
 app.get('/api/test-connection', async (req, res) => {
   try {
     console.log('🔄 Testing connection...');
-    console.log('MONGODB_URI:', MONGODB_URI ? 'exists' : 'MISSING');
+    console.log('MONGODB_URI exists:', !!MONGODB_URI);
     console.log('DB_NAME:', DB_NAME);
 
-    const mongoose = require('mongoose');
-
     if (mongoose.connection.readyState === 1) {
-      return res.json({ status: 'already connected' });
+      return res.json({
+        status: 'already connected',
+        readyState: mongoose.connection.readyState,
+      });
     }
 
     const testUrl = `${MONGODB_URI}/${DB_NAME}?retryWrites=true&w=majority`;
@@ -61,14 +62,19 @@ app.get('/api/test-connection', async (req, res) => {
     });
   } catch (err) {
     const error = err as Error;
-    console.error('❌ Error:', error.message);
-    console.error('❌ Full error:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error name:', error.name);
 
     res.status(500).json({
       error: error.message || 'Unknown error',
+      name: error.name,
     });
   }
 });
+
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/property', propertyRouter);
+
 // 404 fallback
 app.use(notFoundHandler);
 app.use(errorHandler);
