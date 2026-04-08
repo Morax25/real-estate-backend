@@ -8,20 +8,25 @@ const connectDB = async () => {
     throw new Error('Missing DB_NAME or MONGODB_URI env variable');
   }
 
-  mongoose.set('bufferCommands', false);
-
   try {
+    console.log('🔄 Starting mongoose.connect()...');
+
+    const startTime = Date.now();
+
     const connection = await mongoose.connect(
-      `${MONGODB_URI.replace(/\/$/, '')}/${DB_NAME}`,
+      `${MONGODB_URI.replace(/\/$/, '')}/${DB_NAME}?retryWrites=true&w=majority`,
       {
-        serverSelectionTimeoutMS: 5000, // fail fast
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
       }
     );
-    console.log('MongoDB connected');
+
+    const duration = Date.now() - startTime;
+    console.log(`✅ MongoDB connected in ${duration}ms`);
     return connection;
   } catch (err) {
-    console.error('MongoDB connection error:', err);
-    process.exit(1); // stop server if DB cannot connect
+    console.error('❌ MongoDB connection error:', err);
+    throw err;
   }
 };
 
