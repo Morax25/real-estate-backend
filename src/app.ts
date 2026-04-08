@@ -1,4 +1,3 @@
-import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
@@ -14,37 +13,33 @@ import { errorHandler } from './utils/errorHandler.js';
 
 const app = express();
 
-// ─── Security & parsing ──────────────────────────────────────────────────────
 app.use(cors(corsConfig));
-app.use(compression());
+// ✅ immediate: true — don't hold the event loop open after response
+app.use(morgan('combined', { stream: loggerStream, immediate: true }));
+
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static('public'));
 app.use(cookieParser());
-app.use(morgan('combined', { stream: loggerStream }));
+// ✅ compression removed — Vercel CDN handles this at the edge
 
-// ─── DB middleware — every request waits for connection ──────────────────────
 // DB middleware
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (err) {
-    next(err); // ← was res.status(500).json(...), now flows through errorHandler
+    next(err);
   }
 });
 
-// ─── Routes ──────────────────────────────────────────────────────────────────
 app.get('/health', healthCheck);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/property', propertyRouter);
 
-// ─── 404 → error pipeline ────────────────────────────────────────────────────
 app.use(notFoundHandler);
-
-// ─── Global error handler — must be last ────────────────────────────────────
 app.use(errorHandler);
 
 export default app;
