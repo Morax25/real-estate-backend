@@ -1,4 +1,3 @@
-// services/upload.service.ts
 import pLimit from 'p-limit';
 import { uploadToCloudinary } from '../infra/cloudinary.js';
 
@@ -11,7 +10,7 @@ export const uploadFilesService = async (files: Express.Multer.File[]) => {
   const limit = pLimit(5);
 
   const results = await Promise.allSettled(
-    files.map((file) => limit(() => uploadToCloudinary(file.path)))
+    files.map((file) => limit(() => uploadToCloudinary(file)))
   );
 
   const success: UploadResult[] = results
