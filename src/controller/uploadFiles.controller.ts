@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import { uploadFilesService } from '../services/upload.service.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -6,8 +5,6 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { HttpCode } from '../utils/statusCode.js';
 
 export const uploadFilesController = asyncHandler(async (req, res) => {
-  let files: Express.Multer.File[] = [];
-
   if (!req.files || !Array.isArray(req.files)) {
     throw new ApiError({
       statusCode: HttpCode.BAD_REQUEST,
@@ -15,11 +12,9 @@ export const uploadFilesController = asyncHandler(async (req, res) => {
     });
   }
 
-  files = req.files;
+  const files = req.files;
 
   const result = await uploadFilesService(files);
-
-  await Promise.all(files.map((file) => fs.unlink(file.path).catch(() => {})));
 
   return res.status(result.failedCount ? 207 : HttpCode.OK).json(
     new ApiResponse({
