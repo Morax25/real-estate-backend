@@ -6,14 +6,20 @@ export const uploadToCloudinary = async (file: Express.Multer.File) => {
 
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'uploads',
-      },
+      { folder: 'uploads' },
       (error, result) => {
-        if (error) return reject(error);
+        if (error) {
+          console.error('Cloudinary error:', error);
+          return reject(error);
+        }
+        if (!result) return reject(new Error('No result from Cloudinary'));
         resolve(result);
       }
     );
+
+    if (!file.buffer) {
+      return reject(new Error('Missing file buffer'));
+    }
 
     streamifier.createReadStream(file.buffer).pipe(stream);
   });
