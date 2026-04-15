@@ -25,7 +25,7 @@ export interface IProperty {
   brandReviews: string;
   location: string;
   locationDetails: string;
-  isVerified: boolean;
+  isVerified?: boolean;
   centerDetails: ICenterDetails[];
   seatingOptions: ISeatingOptions[];
   timing: string;
@@ -33,7 +33,7 @@ export interface IProperty {
   commonAmenities: string[];
   keywords: string[];
   images: string[];
-  reviews: Types.ObjectId[];
+  reviews?: Types.ObjectId[];
   currentPrice: number;
   priceHistory: IPriceHistoryItem[];
   createdAt: Date;
