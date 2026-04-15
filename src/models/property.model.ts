@@ -39,7 +39,7 @@ const PropertySchema = new Schema<IProperty>(
   {
     title: { type: String, required: true },
     spaceType: { type: String, required: true },
-    brandReviews: { type: String, required: true },
+    brandReviews: { type: String },
     location: { type: String, required: true },
     locationDetails: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
