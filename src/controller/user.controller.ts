@@ -1,3 +1,4 @@
+import { sendMail } from '../configs/gmail.provider.js';
 import { createUser, userLogin } from '../services/user.service.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
@@ -35,6 +36,11 @@ export const signUp = asyncHandler(async (req, res) => {
       message: 'User registration failed',
     });
   }
+  await sendMail({
+    to: user.email,
+    subject: 'Registration successfull',
+    html: `<h1>Hi ${user.name} welcome to the real estate portal<h1>`,
+  });
   res.status(HttpCode.OK).json(
     new ApiResponse({
       message: `Registration successful`,
