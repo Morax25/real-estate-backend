@@ -1,0 +1,71 @@
+[33mcommit 40d440e3bd136d358055ee2a7bbd67edb2a03fb5[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Fri Apr 17 16:51:24 2026 +0530
+
+    remove env from tracking
+
+[33mcommit 26df278ffb238dd16832e68d3e29f8c67ce0f1d3[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Fri Apr 17 16:49:02 2026 +0530
+
+    update
+
+[33mcommit 9d007dbc4667f7a5fe1a7c59d320a9a1a8f782e7[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Fri Apr 17 16:45:34 2026 +0530
+
+    update
+
+[33mcommit e8ba01e8e34afed48e4a2cbfa60cb3720581c3b4[m[33m ([m[1;31morigin/serverless[m[33m)[m
+Author: Adarsh <Adarsh@infoneotech.com>
+Date:   Fri Apr 17 16:56:29 2026 +0530
+
+    Delete .env.development.local
+
+[33mcommit 718af5f51eb8a482bf7ecf59d3f5f94756252edf[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Mon Apr 13 16:25:38 2026 +0530
+
+    update
+
+[33mcommit 7f63d0f60a2290ec695b188af26696daa46cf7f0[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Wed Apr 8 11:01:44 2026 +0530
+
+    update
+
+[33mcommit 8a3f91f633d00902d1f71286b0f2b1b02d08ba06[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Tue Apr 7 18:04:11 2026 +0530
+
+    update
+
+[33mcommit 32c67dee406626dbff03553817eba1510840b7a1[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Tue Apr 7 17:32:43 2026 +0530
+
+    update
+
+[33mcommit 2843e0cb641636b37d4c168af076eb596dda5d26[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Tue Apr 7 15:40:27 2026 +0530
+
+    updated user login and regstration endpoints
+
+[33mcommit 8ec4beb056a1ca4ef49fa8a1d32de08eb0c61dd5[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Mon Feb 23 16:05:01 2026 +0530
+
+    update
+
+[33mcommit 0346ace1bb52bc610e8b1864ae0a2accf7ce7d80[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Thu Dec 11 15:17:00 2025 +0530
+
+    update
+
+[33mcommit bc7874a062c939d3fec24654631caa398d8e9497[m
+Author: Morax25 <adarsh@infoneotech.com>
+Date:   Thu Dec 11 14:58:29 2025 +0530
+
+    updated variable
