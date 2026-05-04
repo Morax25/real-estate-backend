@@ -1,0 +1,98 @@
+[33m206bd65[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mserverless[m[33m)[m update
+[33m8ea7753[m Merge branch 'serverless' of https://github.com/Morax25/real-estate-backend into serverless
+[33me8ba01e[m[33m ([m[1;31morigin/serverless[m[33m)[m Delete .env.development.local
+[33m2bd5cc0[m remove env from tracking
+[33m931219f[m update
+[33m3a1a37c[m update
+[33mf9632b0[m update
+[33m084ce9c[m updated upload API issue
+[33md51618d[m update
+[33m5b5f413[m Merge branch 'serverless' of https://github.com/Morax25/real-estate-backend into serverless
+[33m50443f2[m update
+[33m3aec694[m Merge branch 'serverless' of https://github.com/Morax25/real-estate-backend into serverless
+[33m60f4bd9[m update
+[33m718af5f[m update
+[33m13db22c[m updae
+[33m4a24015[m update
+[33mb72e9ca[m updated fixed version
+[33mdf15fc2[m updated fix
+[33me43a3f9[m update
+[33me261ed1[m updated xxx
+[33m2769d23[m updated propertyroute
+[33m193ce26[m update
+[33me8df414[m updated final fix
+[33m265c743[m updated real fix
+[33m62c77c1[m updated route middleware for serverless
+[33m3f65ba6[m udpdated db settings
+[33m36f5a3e[m updated global variables
+[33mc25c1e9[m update
+[33mbbae5d1[m updated serverless index
+[33mca73b7f[m update
+[33m526b823[m modified code for serverless backend
+[33m58f2f1c[m update
+[33mf79c49d[m update
+[33m52633f8[m update
+[33m3eab1f1[m new branch
+[33maaba154[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m updated URI
+[33m2e339a2[m updated connection db
+[33m88d3e1d[m updated mongo connection issue
+[33m58870db[m update
+[33mcbec47c[m update
+[33mc0bc763[m update
+[33m45960cc[m updated
+[33m1c8c589[m update
+[33m7f63d0f[m update
+[33m3865c88[m update
+[33m6500be7[m update
+[33m932d407[m update
+[33ma124ac9[m updated mongo uri
+[33m8a3f91f[m update
+[33m32c67de[m update
+[33m8162249[m fixe DB URI
+[33m13d2ea6[m logger fix again
+[33mf88d483[m logger fix
+[33m597150f[m winston fix
+[33m93ea348[m deleted helmet
+[33m77b0f24[m update
+[33m2843e0c[m updated user login and regstration endpoints
+[33m87de1b5[m update
+[33m8fe1ab7[m Updated User model, controllers and services.
+[33m063780c[m update
+[33m451b384[m updated typescript configs and package.json for modern typescript
+[33m80c7c61[m update
+[33mfebe145[m update
+[33me788c49[m update
+[33m12fb5ad[m update
+[33m9e26ab4[m update
+[33mf5d0b5f[m update
+[33mbbac591[m update
+[33m8ab2bf6[m updated healthcheck controller and added property add delete apis
+[33m1dfffd3[m update
+[33ma69a6a6[m update
+[33m40ee7a5[m update
+[33m1a614e7[m update
+[33m8ec4beb[m update
+[33m99b60a3[m updated routes, services and controllers
+[33m5ea22ae[m update
+[33m4700454[m update
+[33m22326eb[m[33m ([m[1;31morigin/backend-starter[m[33m, [m[1;32mfetch[m[33m, [m[1;32mbackend-starter[m[33m)[m updated login dummy response
+[33ma076da7[m updated models and services
+[33mb9872d3[m update
+[33mf8504e8[m update
+[33m8a9824d[m update
+[33m62a7f95[m updated database models
+[33m300c46a[m formatted code using prettier
+[33m460522d[m npm update
+[33m76de25e[m update
+[33meb6c22e[m update
+[33m3741e91[m update
+[33mc65edde[m added winston logger
+[33m0346ace[m update
+[33mbc7874a[m updated variable
+[33m80458dc[m update
+[33md2665d5[m update
+[33m8899f90[m update
+[33mac522f3[m Updated configs
+[33md96bbc8[m update
+[33mb70a996[m update
+[33m1618ea9[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m Initializing project on git
