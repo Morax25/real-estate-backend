@@ -27,7 +27,6 @@ app.get('/health', healthCheck);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/property', propertyRouter);
 app.use('/api/v1/public', upload.array('images', 4), publicRouter);
-
 app.use(notFoundHandler);
 app.use(errorHandler);
 
